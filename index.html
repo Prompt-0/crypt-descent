@@ -5,29 +5,33 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='20'>💀</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>CRYPT DESCENT — The Abyssal Sanctum</title>
-    <!-- Dark Fantasy Gothic Fonts: Cinzel Decorative, Cinzel, Crimson Pro, JetBrains Mono -->
+    <!-- Dark Fantasy Gothic Fonts: Cinzel, Crimson Pro, JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body class="bg-dungeon-darkest text-slate-100 antialiased h-screen w-screen overflow-hidden flex flex-col select-none font-crimson">
     <div id="app" class="relative w-full h-full flex flex-col overflow-hidden">
-      <!-- HEADER BAR -->
-      <header id="hud-top-bar" class="h-14 border-b border-dungeon-border bg-dungeon-darker/95 backdrop-blur px-6 flex items-center justify-between z-20 shrink-0"></header>
+      <!-- TOP MINIMAL HEADER BAR -->
+      <header id="hud-top-bar" class="h-12 border-b border-dungeon-border bg-dungeon-darker/95 backdrop-blur px-6 flex items-center justify-between z-20 shrink-0"></header>
 
-      <!-- MAIN PLAY AREA (Canvas Viewport + Fixed Sidebar) -->
+      <!-- MAIN PLAY AREA: FULL VIEWPORT CANVAS + FLOATING CHRONICLE -->
       <div class="flex-1 flex overflow-hidden relative">
-        <!-- CANVAS CONTAINER (Fills space, responsive) -->
-        <main id="canvas-container" class="flex-1 relative bg-dungeon-darkest flex items-center justify-center overflow-hidden">
+        <main id="canvas-container" class="w-full h-full relative bg-dungeon-darkest flex items-center justify-center overflow-hidden">
           <canvas id="game-canvas" class="block w-full h-full"></canvas>
 
           <!-- TARGETING BANNER OVERLAY -->
           <div id="targeting-overlay" class="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-none hidden animate-bounce"></div>
-        </main>
 
-        <!-- RIGHT SIDEBAR (Fixed 350px Width, Viewport Locked) -->
-        <aside id="hud-sidebar" class="w-[350px] border-l border-dungeon-border bg-dungeon-darker/95 backdrop-blur z-20 flex flex-col shrink-0 h-full overflow-hidden"></aside>
+          <!-- FLOATING CHRONICLE (Dungeon Log) -->
+          <div id="floating-log-wrap" class="absolute bottom-4 left-6 w-96 max-h-48 z-20 pointer-events-none transition-opacity duration-200">
+            <div id="log-container" class="bg-black/85 backdrop-blur-md p-3.5 rounded-xl border border-dungeon-border/80 shadow-2xl overflow-y-auto max-h-44 space-y-1.5 text-sm font-crimson text-slate-200 pointer-events-auto leading-snug"></div>
+          </div>
+        </main>
       </div>
+
+      <!-- BOTTOM ACTION BELT / HUD -->
+      <footer id="hud-bottom-bar" class="border-t-2 border-amber-600/60 bg-gradient-to-t from-black via-slate-950 to-slate-900/95 backdrop-blur-md px-6 py-3 z-30 shrink-0 flex items-center justify-between shadow-2xl"></footer>
 
       <!-- MODALS & SCREEN OVERLAYS -->
       <div id="hud-modals" class="relative z-50"></div>

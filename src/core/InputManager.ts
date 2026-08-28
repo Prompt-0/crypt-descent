@@ -39,6 +39,19 @@ export class InputManager {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
       switch (e.key) {
+        // Space / Enter (Handles Continue Descent on Transition, or Wait Turn during gameplay)
+        case ' ':
+        case 'Enter':
+          e.preventDefault();
+          this.onKeyAction('SPACE_OR_ENTER');
+          break;
+
+        case '.':
+        case '5':
+          e.preventDefault();
+          this.onWaitTurn();
+          break;
+
         // Cardinals
         case 'ArrowUp':
         case 'w':
@@ -129,24 +142,18 @@ export class InputManager {
           this.onKeyAction('AUTO_EXPLORE');
           break;
 
-        // Wait / Rest
-        case ' ':
-        case '.':
-        case '5':
-          e.preventDefault();
-          this.onWaitTurn();
-          break;
-
         // Modals & Hotkeys
         case 'i':
         case 'I':
           e.preventDefault();
           this.onKeyAction('TOGGLE_INVENTORY');
           break;
+        case 'c':
+        case 'C':
         case '?':
         case '/':
           e.preventDefault();
-          this.onKeyAction('TOGGLE_HELP');
+          this.onKeyAction('TOGGLE_CODEX');
           break;
         case 'Escape':
           e.preventDefault();

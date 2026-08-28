@@ -8,7 +8,7 @@ import { TileTextureRenderer } from './TileTextureRenderer';
 export class CanvasRenderer {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  public tileSize: number = 32;
+  public tileSize: number = 48; // Scaled up for immersive, large, high-detail viewport
 
   // Camera viewport
   public cameraX: number = 0;
@@ -56,7 +56,7 @@ export class CanvasRenderer {
     const viewHeight = this.viewHeight;
     const time = performance.now() / 1000;
 
-    // 1. Smooth Camera Tracking
+    // 1. Smooth Camera Tracking Centered on Player
     const targetCamX = (player.renderX + 0.5) * this.tileSize - viewWidth / 2;
     const targetCamY = (player.renderY + 0.5) * this.tileSize - viewHeight / 2;
 
@@ -69,7 +69,7 @@ export class CanvasRenderer {
 
     // 2. Clear Screen
     this.ctx.save();
-    this.ctx.fillStyle = '#06080e';
+    this.ctx.fillStyle = '#04060a';
     this.ctx.fillRect(0, 0, viewWidth, viewHeight);
 
     // Apply Camera Transform
@@ -122,7 +122,7 @@ export class CanvasRenderer {
 
         // Render Blood Stains
         if (tile.bloodLevel && tile.bloodLevel > 0) {
-          this.ctx.fillStyle = tile.visible ? (tile.bloodColor || 'rgba(185, 28, 28, 0.55)') : 'rgba(75, 15, 15, 0.3)';
+          this.ctx.fillStyle = tile.visible ? (tile.bloodColor || 'rgba(185, 28, 28, 0.6)') : 'rgba(75, 15, 15, 0.35)';
           this.ctx.fillRect(screenX + 3, screenY + 3, this.tileSize - 6, this.tileSize - 6);
         }
 
@@ -130,12 +130,12 @@ export class CanvasRenderer {
         if (tile.visible) {
           const light = Math.max(0.15, Math.min(1.0, tile.lightLevel || 0.2));
           if (light < 0.9) {
-            this.ctx.fillStyle = `rgba(6, 8, 14, ${1.0 - light})`;
+            this.ctx.fillStyle = `rgba(4, 6, 10, ${1.0 - light})`;
             this.ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
           }
         } else {
           // Explored but out of current FOV
-          this.ctx.fillStyle = 'rgba(6, 8, 14, 0.75)';
+          this.ctx.fillStyle = 'rgba(4, 6, 10, 0.8)';
           this.ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
         }
       }
@@ -149,25 +149,25 @@ export class CanvasRenderer {
         const itemY = pos.y * this.tileSize;
 
         // Item Glow Halo
-        this.ctx.fillStyle = item.color + '44';
+        this.ctx.fillStyle = item.color + '55';
         this.ctx.beginPath();
         this.ctx.arc(itemX + this.tileSize / 2, itemY + this.tileSize / 2, this.tileSize * 0.45, 0, Math.PI * 2);
         this.ctx.fill();
 
         // Draw Stylized Item Icon
         this.ctx.fillStyle = item.color;
-        this.ctx.font = `bold ${Math.floor(this.tileSize * 0.65)}px 'Cinzel', serif`;
+        this.ctx.font = `bold ${Math.floor(this.tileSize * 0.55)}px 'Cinzel', serif`;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(item.char || '⚔️', itemX + this.tileSize / 2, itemY + this.tileSize / 2);
+        this.ctx.fillText(item.char || '⚔', itemX + this.tileSize / 2, itemY + this.tileSize / 2);
       }
     });
 
     // 5. Render Path Preview
     if (pathToTarget && pathToTarget.length > 0) {
-      this.ctx.fillStyle = 'rgba(56, 189, 248, 0.3)';
+      this.ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
       pathToTarget.forEach((pt) => {
-        this.ctx.fillRect(pt.x * this.tileSize + 4, pt.y * this.tileSize + 4, this.tileSize - 8, this.tileSize - 8);
+        this.ctx.fillRect(pt.x * this.tileSize + 6, pt.y * this.tileSize + 6, this.tileSize - 12, this.tileSize - 12);
       });
     }
 
@@ -182,24 +182,24 @@ export class CanvasRenderer {
 
       if (monster.hitFlashTimer > 0) {
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.fillRect(entX + 2, entY + 2, this.tileSize - 4, this.tileSize - 4);
+        this.ctx.fillRect(entX + 4, entY + 4, this.tileSize - 8, this.tileSize - 8);
       } else {
         if (monster.monsterType) {
           SpriteRenderer.drawMonster(this.ctx, entX, entY, this.tileSize, monster.monsterType, time);
         }
       }
 
-      // Small Health Bar
+      // Monster Health Bar
       if (monster.stats.hp < monster.stats.maxHp && monster.alignment !== 'NEUTRAL') {
-        const barWidth = this.tileSize - 6;
-        const barHeight = 3.5;
+        const barWidth = this.tileSize - 8;
+        const barHeight = 4.5;
         const hpPercent = Math.max(0, monster.stats.hp / monster.stats.maxHp);
 
         this.ctx.fillStyle = '#0f172a';
-        this.ctx.fillRect(entX + 3, entY - 5, barWidth, barHeight);
+        this.ctx.fillRect(entX + 4, entY - 7, barWidth, barHeight);
 
         this.ctx.fillStyle = hpPercent > 0.5 ? '#10b981' : hpPercent > 0.25 ? '#f59e0b' : '#ef4444';
-        this.ctx.fillRect(entX + 3, entY - 5, barWidth * hpPercent, barHeight);
+        this.ctx.fillRect(entX + 4, entY - 7, barWidth * hpPercent, barHeight);
       }
     });
 
@@ -208,7 +208,7 @@ export class CanvasRenderer {
     const playerY = (player.renderY + player.bumpOffsetY) * this.tileSize;
 
     // Lantern Glow
-    const auraRadius = this.tileSize * 1.1;
+    const auraRadius = this.tileSize * 1.3;
     const gradient = this.ctx.createRadialGradient(
       playerX + this.tileSize / 2,
       playerY + this.tileSize / 2,
@@ -217,7 +217,7 @@ export class CanvasRenderer {
       playerY + this.tileSize / 2,
       auraRadius
     );
-    gradient.addColorStop(0, 'rgba(251, 191, 36, 0.4)');
+    gradient.addColorStop(0, 'rgba(251, 191, 36, 0.45)');
     gradient.addColorStop(1, 'rgba(251, 191, 36, 0)');
     this.ctx.fillStyle = gradient;
     this.ctx.beginPath();
@@ -226,7 +226,7 @@ export class CanvasRenderer {
 
     if (player.hitFlashTimer > 0) {
       this.ctx.fillStyle = '#ffffff';
-      this.ctx.fillRect(playerX + 2, playerY + 2, this.tileSize - 4, this.tileSize - 4);
+      this.ctx.fillRect(playerX + 4, playerY + 4, this.tileSize - 8, this.tileSize - 8);
     } else {
       SpriteRenderer.drawPlayer(this.ctx, playerX, playerY, this.tileSize, this.playerClass, time);
     }
@@ -261,23 +261,22 @@ export class CanvasRenderer {
 
       this.ctx.save();
       this.ctx.globalAlpha = alpha;
-      this.ctx.font = `900 ${ft.fontSize}px 'Cinzel', serif`;
+      this.ctx.font = `900 ${Math.max(16, ft.fontSize)}px 'Cinzel', serif`;
       this.ctx.fillStyle = '#000000';
-      this.ctx.fillText(ft.text, ftX + 1, ftY + 1);
+      this.ctx.fillText(ft.text, ftX + 1.5, ftY + 1.5);
       this.ctx.fillStyle = ft.color;
       this.ctx.fillText(ft.text, ftX, ftY);
       this.ctx.restore();
     });
 
-    // 11. Hover Reticle & Tooltip
+    // 11. Hover Reticle & Inspect Card
     if (hoverTile && hoverTile.x >= 0 && hoverTile.x < gridWidth && hoverTile.y >= 0 && hoverTile.y < gridHeight) {
       const hX = hoverTile.x * this.tileSize;
       const hY = hoverTile.y * this.tileSize;
       this.ctx.strokeStyle = '#38bdf8';
-      this.ctx.lineWidth = 1.5;
+      this.ctx.lineWidth = 2;
       this.ctx.strokeRect(hX + 1, hY + 1, this.tileSize - 2, this.tileSize - 2);
 
-      // Check if hovering over monster to show inspect card
       const hoveredMonster = monsters.find((m) => m.stats.hp > 0 && m.x === hoverTile.x && m.y === hoverTile.y);
       if (hoveredMonster && tiles[hoverTile.y][hoverTile.x].visible) {
         this.renderInspectCard(hoveredMonster, hX, hY);
@@ -288,29 +287,29 @@ export class CanvasRenderer {
   }
 
   private renderInspectCard(monster: Entity, x: number, y: number): void {
-    const cardW = 160;
-    const cardH = 70;
-    const cardX = x + this.tileSize + 8;
+    const cardW = 200;
+    const cardH = 80;
+    const cardX = x + this.tileSize + 12;
     const cardY = y - 10;
 
     this.ctx.save();
     this.ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
     this.ctx.strokeStyle = monster.color;
-    this.ctx.lineWidth = 1.5;
+    this.ctx.lineWidth = 2;
     this.ctx.beginPath();
-    this.ctx.roundRect(cardX, cardY, cardW, cardH, 4);
+    this.ctx.roundRect(cardX, cardY, cardW, cardH, 6);
     this.ctx.fill();
     this.ctx.stroke();
 
     this.ctx.textAlign = 'left';
-    this.ctx.font = 'bold 12px Cinzel, serif';
+    this.ctx.font = 'bold 15px Cinzel, serif';
     this.ctx.fillStyle = monster.color;
-    this.ctx.fillText(monster.name, cardX + 8, cardY + 18);
+    this.ctx.fillText(monster.name, cardX + 10, cardY + 22);
 
-    this.ctx.font = '11px JetBrains Mono, monospace';
-    this.ctx.fillStyle = '#cbd5e1';
-    this.ctx.fillText(`HP: ${monster.stats.hp} / ${monster.stats.maxHp}`, cardX + 8, cardY + 36);
-    this.ctx.fillText(`ATK: ${monster.stats.strength}  DEF: ${monster.stats.defense}`, cardX + 8, cardY + 52);
+    this.ctx.font = 'bold 13px JetBrains Mono, monospace';
+    this.ctx.fillStyle = '#f8fafc';
+    this.ctx.fillText(`HP: ${monster.stats.hp} / ${monster.stats.maxHp}`, cardX + 10, cardY + 44);
+    this.ctx.fillText(`ATK: ${monster.stats.strength}   DEF: ${monster.stats.defense}`, cardX + 10, cardY + 64);
 
     this.ctx.restore();
   }

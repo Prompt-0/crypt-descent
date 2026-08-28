@@ -7,17 +7,27 @@
     height: 100%;
     width: 100%;
     overflow: hidden;
-    background-color: #04060a;
+    background-color: #03060a;
     color: #f8fafc;
     user-select: none;
-    font-family: 'Crimson Pro', Georgia, serif;
+    font-family: 'Spectral', Georgia, serif;
     font-size: 16px;
+    line-height: 1.5;
   }
 
   h1, h2, h3, h4, h5, h6, .font-title {
     font-family: 'Cinzel', serif;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     font-weight: 700;
+  }
+
+  .font-heading {
+    font-family: 'Marcellus', 'Cinzel', serif;
+    letter-spacing: 0.04em;
+  }
+
+  .font-spectral {
+    font-family: 'Spectral', Georgia, serif;
   }
 
   .font-data {
@@ -25,7 +35,7 @@
   }
 }
 
-/* Custom Gothic Dark Fantasy UI & Scrollbar */
+/* Custom Dark Fantasy Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -44,18 +54,18 @@
   background: #d97706;
 }
 
-/* Dark Fantasy Ornate Frame & Atmospheric Layers */
+/* High-Legibility Dark Fantasy Panels & Buttons */
 .gothic-panel {
-  background: linear-gradient(180deg, rgba(20, 28, 44, 0.98) 0%, rgba(9, 13, 22, 0.99) 100%);
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.98) 0%, rgba(8, 12, 20, 0.99) 100%);
   border: 1px solid #475569;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .gothic-frame {
   position: relative;
   border: 2px solid #b45309;
   background: radial-gradient(circle at center, #111827 0%, #030712 100%);
-  box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(180, 83, 9, 0.2);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.95), inset 0 0 15px rgba(180, 83, 9, 0.25);
 }
 
 .gothic-button {
@@ -72,7 +82,7 @@
   background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
   border-color: #d97706;
   color: #fbbf24;
-  box-shadow: 0 0 14px rgba(217, 119, 6, 0.4);
+  box-shadow: 0 0 16px rgba(217, 119, 6, 0.45);
   transform: translateY(-1px);
 }
 
@@ -80,7 +90,7 @@
   font-family: 'Cinzel', serif;
   background: linear-gradient(180deg, #d97706 0%, #92400e 100%);
   border: 1px solid #fbbf24;
-  color: #04060a;
+  color: #03060a;
   font-weight: 800;
   letter-spacing: 0.1em;
   transition: all 0.18s ease-in-out;
@@ -88,18 +98,18 @@
 
 .gothic-button-primary:hover {
   background: linear-gradient(180deg, #f59e0b 0%, #b45309 100%);
-  box-shadow: 0 0 22px rgba(251, 191, 36, 0.65);
+  box-shadow: 0 0 25px rgba(251, 191, 36, 0.7);
   transform: translateY(-1.5px);
 }
 
 .glow-crimson {
-  box-shadow: 0 0 25px rgba(225, 29, 72, 0.5);
+  box-shadow: 0 0 25px rgba(225, 29, 72, 0.55);
 }
 
 .glow-gold {
-  box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.55);
 }
 
 .glow-amethyst {
-  box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.55);
 }

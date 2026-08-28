@@ -29,20 +29,20 @@ export class HUDOverlay {
     // 1. Top Minimal Header Bar
     this.topBarEl.innerHTML = `
       <div class="flex items-center space-x-6">
-        <div class="flex items-center space-x-2.5">
-          <div class="w-6 h-6 text-amber-500">${ICONS.SKULL}</div>
-          <h1 class="font-title text-base font-bold tracking-widest text-dungeon-gold drop-shadow">CRYPT DESCENT</h1>
+        <div class="flex items-center space-x-3">
+          <div class="w-7 h-7 text-amber-400 drop-shadow">${ICONS.SKULL}</div>
+          <h1 class="font-title text-lg font-extrabold tracking-widest text-dungeon-gold drop-shadow">GANDHARV</h1>
         </div>
-        <div class="flex items-center space-x-3 text-xs font-data text-slate-300">
-          <span class="bg-slate-900/90 px-3.5 py-1 rounded border border-slate-700 flex items-center space-x-2 shadow">
+        <div class="flex items-center space-x-3.5 text-xs font-data text-slate-200">
+          <span class="bg-slate-900/95 px-4 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2 shadow">
             <span class="w-4 h-4 text-sky-400">${ICONS.DUNGEON_GATE}</span>
-            <span>DEPTH <strong id="val-floor" class="text-sky-400 font-bold text-sm">I / V</strong></span>
+            <span>SANCTUM <strong id="val-floor" class="text-sky-400 font-bold text-sm">I / V</strong></span>
           </span>
-          <span class="bg-slate-900/90 px-3.5 py-1 rounded border border-slate-700 flex items-center space-x-2 shadow">
+          <span class="bg-slate-900/95 px-4 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2 shadow">
             <span class="w-4 h-4 text-slate-400">${ICONS.HOURGLASS}</span>
-            <span>TURN <strong id="val-turn" class="text-slate-100 font-bold text-sm">0</strong></span>
+            <span>CYCLE <strong id="val-turn" class="text-slate-100 font-bold text-sm">0</strong></span>
           </span>
-          <span class="bg-slate-900/90 px-3.5 py-1 rounded border border-slate-700 flex items-center space-x-2 shadow">
+          <span class="bg-slate-900/95 px-4 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2 shadow">
             <span class="w-4 h-4 text-amber-400">${ICONS.GOLD_COIN}</span>
             <span><strong id="val-gold" class="text-amber-400 font-bold text-sm">0</strong> GOLD</span>
           </span>
@@ -50,9 +50,9 @@ export class HUDOverlay {
       </div>
 
       <!-- BOSS HEALTH BAR -->
-      <div id="boss-bar-wrap" class="flex-1 max-w-md mx-6 flex-col items-center hidden">
+      <div id="boss-bar-wrap" class="flex-1 max-w-md mx-8 flex-col items-center hidden">
         <div class="flex justify-between w-full text-xs font-title font-bold text-rose-400 mb-1 tracking-wider">
-          <span id="boss-name">MALAKOR</span>
+          <span id="boss-name">ASURA MALAKOR</span>
           <span id="boss-hp-text" class="font-data">240 / 240 HP</span>
         </div>
         <div class="w-full h-3.5 bg-dungeon-darkest rounded-full overflow-hidden border border-rose-900 glow-crimson">
@@ -61,7 +61,7 @@ export class HUDOverlay {
       </div>
 
       <div class="flex items-center space-x-3">
-        <button id="btn-sound" class="p-1.5 bg-slate-900 hover:bg-slate-800 rounded border border-slate-700 text-slate-300 transition-colors" title="Toggle Sound">
+        <button id="btn-sound" class="p-2 bg-slate-900 hover:bg-slate-800 rounded-lg border border-slate-700 text-slate-200 transition-colors" title="Toggle Sound">
           <span class="w-4 h-4 block" id="sound-icon">${ICONS.SPEAKER}</span>
         </button>
       </div>
@@ -70,23 +70,23 @@ export class HUDOverlay {
     // 2. Bottom RPG Action Belt
     this.bottomBarEl.innerHTML = `
       <!-- LEFT: HERO GAUGES & ATTRIBUTES -->
-      <div class="flex items-center space-x-5">
+      <div class="flex items-center space-x-6">
         <div class="space-y-1.5 w-64">
           <div class="flex justify-between items-center text-xs">
             <span id="player-name-display" class="font-title font-bold text-amber-400 tracking-wider text-sm">Hero</span>
-            <span id="player-level-display" class="font-data font-bold text-slate-300 text-xs">LVL 1</span>
+            <span id="player-level-display" class="font-data font-bold text-slate-200 text-xs">RANK 1</span>
           </div>
 
           <!-- HP GAUGE -->
           <div>
             <div class="flex justify-between text-xs mb-0.5">
-              <span class="text-rose-400 font-title font-bold flex items-center space-x-1">
+              <span class="text-rose-400 font-title font-bold flex items-center space-x-1.5">
                 <span class="w-3.5 h-3.5">${ICONS.HEART}</span>
-                <span>HEALTH</span>
+                <span>VITALITY</span>
               </span>
               <span id="player-hp-text" class="text-slate-100 font-data font-bold text-xs">100 / 100</span>
             </div>
-            <div class="w-full h-3.5 bg-slate-950 rounded border border-rose-900 overflow-hidden shadow-inner">
+            <div class="w-full h-3.5 bg-slate-950 rounded-md border border-rose-900 overflow-hidden shadow-inner">
               <div id="player-hp-bar" class="h-full bg-gradient-to-r from-red-700 to-rose-500 transition-all duration-200" style="width: 100%"></div>
             </div>
           </div>
@@ -94,85 +94,85 @@ export class HUDOverlay {
           <!-- MANA GAUGE -->
           <div>
             <div class="flex justify-between text-xs mb-0.5">
-              <span class="text-sky-400 font-title font-bold flex items-center space-x-1">
+              <span class="text-sky-400 font-title font-bold flex items-center space-x-1.5">
                 <span class="w-3.5 h-3.5">${ICONS.MANA}</span>
-                <span>MANA</span>
+                <span>PRANA (MANA)</span>
               </span>
               <span id="player-mana-text" class="text-slate-100 font-data font-bold text-xs">50 / 50</span>
             </div>
-            <div class="w-full h-3 bg-slate-950 rounded border border-blue-900 overflow-hidden shadow-inner">
+            <div class="w-full h-3 bg-slate-950 rounded-md border border-blue-900 overflow-hidden shadow-inner">
               <div id="player-mana-bar" class="h-full bg-gradient-to-r from-blue-700 to-cyan-500 transition-all duration-200" style="width: 100%"></div>
             </div>
           </div>
         </div>
 
         <!-- ATTRIBUTES PILL -->
-        <div class="bg-slate-900/90 border border-slate-700 rounded-lg p-2.5 grid grid-cols-2 gap-x-4 gap-y-1 text-xs font-data shadow">
-          <div class="flex items-center space-x-1 text-slate-300">
+        <div class="bg-slate-900/95 border border-slate-700 rounded-xl p-3 grid grid-cols-2 gap-x-5 gap-y-1.5 text-xs font-data shadow">
+          <div class="flex items-center space-x-1.5 text-slate-300">
             <span class="w-3.5 h-3.5 text-slate-400">${ICONS.SWORD}</span>
-            <span>ATK: <strong id="stat-atk" class="text-slate-100">12</strong></span>
+            <span>ATK: <strong id="stat-atk" class="text-slate-100 text-sm font-bold">12</strong></span>
           </div>
-          <div class="flex items-center space-x-1 text-slate-300">
+          <div class="flex items-center space-x-1.5 text-slate-300">
             <span class="w-3.5 h-3.5 text-sky-400">${ICONS.SHIELD}</span>
-            <span>DEF: <strong id="stat-def" class="text-slate-100">3</strong></span>
+            <span>DEF: <strong id="stat-def" class="text-slate-100 text-sm font-bold">3</strong></span>
           </div>
-          <div class="flex items-center space-x-1 text-slate-300">
+          <div class="flex items-center space-x-1.5 text-slate-300">
             <span class="w-3.5 h-3.5 text-amber-400">${ICONS.AGILITY}</span>
-            <span>AGI: <strong id="stat-agi" class="text-slate-100">12</strong></span>
+            <span>AGI: <strong id="stat-agi" class="text-slate-100 text-sm font-bold">12</strong></span>
           </div>
-          <div class="flex items-center space-x-1 text-slate-300">
+          <div class="flex items-center space-x-1.5 text-slate-300">
             <span class="w-3.5 h-3.5 text-purple-400">${ICONS.ARCANA}</span>
-            <span>ARC: <strong id="stat-arc" class="text-slate-100">10</strong></span>
+            <span>ARC: <strong id="stat-arc" class="text-slate-100 text-sm font-bold">10</strong></span>
           </div>
         </div>
       </div>
 
       <!-- CENTER: ACTIVE COMBAT SKILLS & QUICK POTIONS -->
-      <div class="flex items-center space-x-3">
-        <div id="skills-hotbar" class="flex items-center space-x-2.5"></div>
+      <div class="flex items-center space-x-4">
+        <div id="skills-hotbar" class="flex items-center space-x-3"></div>
 
-        <div class="h-10 w-px bg-slate-700 mx-1"></div>
+        <div class="h-11 w-px bg-slate-700 mx-1"></div>
 
         <!-- QUICK BELT -->
         <div class="flex items-center space-x-2">
-          <button id="btn-quick-heal" class="px-3 py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-700 rounded-lg text-xs font-title font-bold text-rose-200 flex flex-col items-center shadow transition-all" title="Drink Health Potion (Q)">
+          <button id="btn-quick-heal" class="px-3.5 py-2.5 bg-rose-950 hover:bg-rose-900 border border-rose-700 rounded-xl text-xs font-title font-bold text-rose-100 flex flex-col items-center shadow transition-all" title="Drink Healing Elixir (Q)">
             <span>HEAL [Q]</span>
-            <span class="text-[10px] font-data text-rose-400">POTION</span>
+            <span class="text-[10px] font-data text-rose-300">ELIXIR</span>
           </button>
-          <button id="btn-quick-mana" class="px-3 py-2 bg-blue-950/80 hover:bg-blue-900 border border-blue-700 rounded-lg text-xs font-title font-bold text-blue-200 flex flex-col items-center shadow transition-all" title="Drink Mana Potion (E)">
-            <span>MANA [E]</span>
-            <span class="text-[10px] font-data text-sky-400">ELIXIR</span>
+          <button id="btn-quick-mana" class="px-3.5 py-2.5 bg-blue-950 hover:bg-blue-900 border border-blue-700 rounded-xl text-xs font-title font-bold text-blue-100 flex flex-col items-center shadow transition-all" title="Drink Prana Potion (E)">
+            <span>PRANA [E]</span>
+            <span class="text-[10px] font-data text-sky-300">POTION</span>
           </button>
         </div>
       </div>
 
       <!-- RIGHT: SHORTCUTS & MINIMAP -->
-      <div class="flex items-center space-x-4">
-        <div class="flex flex-col space-y-1.5">
-          <button id="btn-inventory" class="px-4 py-1.5 gothic-button-primary rounded text-xs font-bold tracking-wider flex items-center space-x-2 shadow">
-            <span class="w-3.5 h-3.5">${ICONS.BAG}</span>
+      <div class="flex items-center space-x-5">
+        <div class="flex flex-col space-y-2">
+          <button id="btn-inventory" class="px-4 py-2 gothic-button-primary rounded-lg text-xs font-bold tracking-wider flex items-center space-x-2 shadow">
+            <span class="w-4 h-4">${ICONS.BAG}</span>
             <span>KNAPSACK (I)</span>
           </button>
-          <div class="flex space-x-1.5">
-            <button id="btn-auto-explore" class="flex-1 px-2 py-1 bg-indigo-950 hover:bg-indigo-900 border border-indigo-700 rounded text-[11px] font-title font-bold text-indigo-200 transition-all" title="Auto-Explore (Tab)">
+          <div class="flex space-x-2">
+            <button id="btn-auto-explore" class="flex-1 px-2.5 py-1.5 bg-indigo-950 hover:bg-indigo-900 border border-indigo-700 rounded-md text-[11px] font-title font-bold text-indigo-200 transition-all" title="Auto-Explore (Tab)">
               EXPLORE (TAB)
             </button>
-            <button id="btn-codex" class="flex-1 px-2 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded text-[11px] font-title font-bold text-slate-300 transition-all" title="Open Codex (C)">
+            <button id="btn-codex" class="flex-1 px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md text-[11px] font-title font-bold text-slate-200 transition-all" title="Open Codex (C)">
               CODEX (C)
             </button>
           </div>
         </div>
 
-        <!-- MINIMAP -->
-        <canvas id="minimap-canvas" width="110" height="75" class="rounded border border-slate-700 bg-black shadow-inner"></canvas>
+        <!-- MINIMAP RADAR -->
+        <canvas id="minimap-canvas" width="115" height="80" class="rounded-lg border border-slate-700 bg-black shadow-inner"></canvas>
       </div>
     `;
 
     // 3. Targeting Overlay
     this.targetingEl.innerHTML = `
-      <div class="bg-indigo-950/95 border-2 border-indigo-400 px-6 py-3 rounded-xl shadow-2xl text-sm text-indigo-200 flex items-center space-x-3 font-title">
-        <span class="w-5 h-5 animate-spin text-indigo-400">${ICONS.COMPASS}</span>
-        <span>SELECT TARGET TILE OR PRESS <strong class="text-white">ESC</strong> TO CANCEL</span>
+      <div class="bg-indigo-950/98 border-2 border-indigo-400 px-7 py-3 rounded-xl shadow-2xl text-sm text-indigo-100 flex items-center space-x-3 font-title font-bold">
+        <span class="w-5 h-5 animate-spin text-indigo-300">${ICONS.COMPASS}</span>
+        <span>SELECT TARGET TILE OR PRESS <strong class="text-white font-data">ESC</strong> TO CANCEL</span>
       </div>
     `;
 
@@ -235,7 +235,7 @@ export class HUDOverlay {
     if (nameEl) nameEl.textContent = player.name;
 
     const levelEl = document.getElementById('player-level-display');
-    if (levelEl) levelEl.textContent = `LVL ${player.stats.level}`;
+    if (levelEl) levelEl.textContent = `RANK ${player.stats.level}`;
 
     const hpPercent = Math.max(0, Math.min(100, (player.stats.hp / player.stats.maxHp) * 100));
     const hpBar = document.getElementById('player-hp-bar');
@@ -270,7 +270,7 @@ export class HUDOverlay {
         const onCd = s.cooldownCurrent > 0;
         const noMana = player.stats.mana < s.manaCost;
         return `
-          <button class="btn-skill px-3.5 py-2 rounded-lg border text-left flex flex-col justify-between w-32 shadow transition-all ${
+          <button class="btn-skill px-4 py-2.5 rounded-xl border text-left flex flex-col justify-between w-36 shadow transition-all ${
             onCd || noMana
               ? 'bg-slate-900/90 border-slate-800 opacity-50 cursor-not-allowed'
               : 'bg-slate-900 hover:bg-slate-800 border-slate-700 hover:border-amber-400'
@@ -279,7 +279,7 @@ export class HUDOverlay {
               <span class="font-title font-bold text-slate-100 truncate">${s.name}</span>
               <span class="text-amber-400 font-bold font-data ml-1">[${idx + 1}]</span>
             </div>
-            <div class="flex justify-between text-[11px] font-data text-slate-400 mt-1">
+            <div class="flex justify-between text-xs font-data text-slate-300 mt-1">
               <span class="text-blue-300 font-bold">${s.manaCost} MP</span>
               ${onCd ? `<span class="text-rose-400 font-bold">${s.cooldownCurrent}t CD</span>` : '<span class="text-emerald-400 font-bold">READY</span>'}
             </div>
@@ -302,7 +302,7 @@ export class HUDOverlay {
       if (logContainer) {
         logContainer.innerHTML = logs.slice(-30).map((l) => `
           <div class="leading-relaxed border-b border-slate-800/80 pb-1" style="color: ${l.color}">
-            <span class="text-slate-500 font-data select-none text-xs mr-1">[T${l.turn}]</span> ${l.text}
+            <span class="text-slate-400 font-data select-none text-xs mr-1">[T${l.turn}]</span> ${l.text}
           </div>
         `).join('');
         logContainer.scrollTop = logContainer.scrollHeight;
@@ -368,29 +368,29 @@ export class HUDOverlay {
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-950/25 via-black to-black"></div>
 
         <div class="relative z-10 w-full max-w-2xl text-center flex flex-col items-center space-y-8 animate-fade-in">
-          <!-- Skull Emblem -->
-          <div class="w-16 h-16 text-amber-500 filter drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]">${ICONS.SKULL}</div>
+          <!-- Celestial Sunburst Crest -->
+          <div class="w-20 h-20 text-amber-400 filter drop-shadow-[0_0_25px_rgba(245,158,11,0.7)]">${ICONS.CLERIC_CREST}</div>
 
           <div class="space-y-3">
-            <h1 class="font-title text-5xl md:text-6xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-amber-700 drop-shadow-[0_4px_30px_rgba(217,119,6,0.7)]">
-              CRYPT DESCENT
+            <h1 class="font-title text-6xl md:text-7xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-amber-700 drop-shadow-[0_4px_35px_rgba(217,119,6,0.8)]">
+              GANDHARV
             </h1>
-            <p class="font-title text-base tracking-[0.25em] text-amber-400/90 uppercase font-bold">
-              The Abyssal Sanctum of Malakor
+            <p class="font-title text-lg tracking-[0.25em] text-amber-400 uppercase font-bold">
+              The Celestial Crypts • Sanctum of the Asuras
             </p>
           </div>
 
-          <div class="w-full max-w-sm space-y-4 pt-4">
-            <button id="btn-start-game" class="w-full py-4 gothic-button-primary rounded-xl text-sm font-bold tracking-widest uppercase shadow-2xl">
-              BEGIN NEW DESCENT
+          <div class="w-full max-w-md space-y-4 pt-4">
+            <button id="btn-start-game" class="w-full py-4 gothic-button-primary rounded-xl text-base font-bold tracking-widest uppercase shadow-2xl">
+              BEGIN NEW JOURNEY
             </button>
-            <button id="btn-open-codex" class="w-full py-3.5 gothic-button rounded-xl text-xs font-bold tracking-widest uppercase">
+            <button id="btn-open-codex" class="w-full py-3.5 gothic-button rounded-xl text-sm font-bold tracking-widest uppercase">
               EXPLORER'S CODEX & BESTIARY
             </button>
           </div>
 
-          <p class="text-xs text-slate-500 font-data tracking-wider">
-            Version 2.0 • Dark Fantasy Procedural Dungeon Engine
+          <p class="text-xs text-slate-400 font-data tracking-wider">
+            Version 2.0 • Mythic Dark Fantasy Procedural Roguelike
           </p>
         </div>
       </div>
@@ -408,7 +408,7 @@ export class HUDOverlay {
       { name: 'THE OSSUARY OF SORROW', lore: 'Piles of ancient dead litter the sunken chambers. Grimm the Wandering Trader has pitched his lantern nearby.' },
       { name: 'THE SPECTRAL DEPTHS', lore: 'Cursed ectoplasmic mist seeps through stone cracks. Phasing wraiths glide silently between the pillars.' },
       { name: 'THE BLOOD VAULT', lore: 'Dark cultists chant crimson incantations. Flapping blood bats and death knights guard the inner gates.' },
-      { name: "THE SANCTUM OF MALAKOR", lore: 'The throne room of the Necromancer Lord. The air vibrates with pure necrotic fury. Prepare for the final confrontation.' }
+      { name: "THE SANCTUM OF ASURA MALAKOR", lore: 'The throne room of the Necromancer Lord. The air vibrates with pure necrotic fury. Prepare for the final confrontation.' }
     ];
     const info = floorTitles[floor - 1] || floorTitles[0];
 
@@ -417,10 +417,10 @@ export class HUDOverlay {
         <div class="w-full max-w-2xl text-center space-y-7 gothic-panel p-10 rounded-2xl border-2 border-amber-600 shadow-2xl">
           <div class="w-16 h-16 mx-auto text-sky-400">${ICONS.DUNGEON_GATE}</div>
           <div class="space-y-2">
-            <span class="text-sm font-data text-amber-400 uppercase tracking-widest font-bold">DESCENDING TO DEPTH ${floor} OF 5</span>
+            <span class="text-sm font-data text-amber-400 uppercase tracking-widest font-bold">DESCENDING TO SANCTUM ${floor} OF 5</span>
             <h2 class="font-title text-3xl font-extrabold text-dungeon-gold tracking-wider">${info.name}</h2>
           </div>
-          <p class="text-lg font-crimson italic text-slate-200 leading-relaxed border-y border-slate-700/80 py-5">
+          <p class="text-lg font-spectral italic text-slate-200 leading-relaxed border-y border-slate-700/80 py-5">
             "${info.lore}"
           </p>
           <button id="btn-continue-descent" class="w-full py-4 gothic-button-primary rounded-xl text-sm font-title font-bold tracking-widest uppercase">
@@ -440,7 +440,7 @@ export class HUDOverlay {
               <div class="w-6 h-6 text-amber-400">${ICONS.BOOK}</div>
               <h2 class="font-title text-xl font-bold text-dungeon-gold tracking-wider">EXPLORER'S CODEX & BESTIARY</h2>
             </div>
-            <button id="modal-close" class="text-slate-300 hover:text-white text-xs font-title px-4 py-2 rounded bg-slate-800 border border-slate-600 font-bold">✕ CLOSE (ESC)</button>
+            <button id="modal-close" class="text-slate-200 hover:text-white text-xs font-title px-4 py-2 rounded bg-slate-800 border border-slate-600 font-bold">✕ CLOSE (ESC)</button>
           </div>
           <div class="p-8 overflow-y-auto space-y-8 text-slate-200">
             <!-- Controls Matrix -->
@@ -459,7 +459,7 @@ export class HUDOverlay {
             <!-- Bestiary Overview -->
             <div class="space-y-3">
               <h3 class="font-title text-base font-bold text-amber-400 uppercase tracking-wider">Sanctum Bestiary</h3>
-              <div class="space-y-3 font-crimson text-base">
+              <div class="space-y-3 font-spectral text-base">
                 <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-700">
                   <h4 class="font-title text-sm font-bold text-rose-400">Crypt Rat & Skeleton Warriors (Depth I - II)</h4>
                   <p class="text-slate-300 mt-1">Skittering plague rats and ancient bone swordsmen. Beware of Skeleton Archers kiting at range from the dark.</p>
@@ -495,7 +495,7 @@ export class HUDOverlay {
           <div class="text-center space-y-2">
             <div class="w-12 h-12 mx-auto text-amber-500 mb-1">${ICONS.SKULL}</div>
             <h2 class="font-title text-3xl font-bold text-dungeon-gold tracking-widest uppercase">CHOOSE YOUR CHAMPION</h2>
-            <p class="text-sm text-slate-300 font-data">Select your hero archetype to brave the depths of Malakor's Sanctum</p>
+            <p class="text-sm text-slate-300 font-data">Select your hero archetype to brave the celestial depths of Gandharv</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -507,12 +507,12 @@ export class HUDOverlay {
                     <h3 class="font-title font-bold text-base tracking-wider" style="color: ${cls.color}">${cls.name}</h3>
                     <span class="text-xs font-title text-slate-400 block mt-0.5">${cls.tagline}</span>
                   </div>
-                  <p class="text-sm font-crimson text-slate-200 leading-relaxed text-center">${cls.description}</p>
+                  <p class="text-sm font-spectral text-slate-200 leading-relaxed text-center">${cls.description}</p>
                 </div>
 
                 <div class="bg-black/70 p-3.5 rounded-xl border border-slate-700/70 text-xs font-data space-y-1.5">
-                  <div class="flex justify-between"><span class="text-rose-400 font-bold">Health:</span> <strong class="text-slate-100">${cls.baseHp}</strong></div>
-                  <div class="flex justify-between"><span class="text-blue-400 font-bold">Mana:</span> <strong class="text-slate-100">${cls.baseMana}</strong></div>
+                  <div class="flex justify-between"><span class="text-rose-400 font-bold">Vitality:</span> <strong class="text-slate-100">${cls.baseHp}</strong></div>
+                  <div class="flex justify-between"><span class="text-blue-400 font-bold">Prana:</span> <strong class="text-slate-100">${cls.baseMana}</strong></div>
                   <div class="flex justify-between"><span class="text-slate-400">Strength:</span> <strong class="text-slate-100">${cls.strength}</strong></div>
                   <div class="flex justify-between"><span class="text-slate-400">Agility:</span> <strong class="text-slate-100">${cls.agility}</strong></div>
                   <div class="flex justify-between"><span class="text-slate-400">Arcana:</span> <strong class="text-slate-100">${cls.arcana}</strong></div>
@@ -545,8 +545,8 @@ export class HUDOverlay {
         <div class="w-full max-w-3xl gothic-panel p-8 rounded-2xl border-2 border-amber-500 shadow-2xl space-y-6">
           <div class="text-center space-y-2">
             <div class="w-12 h-12 mx-auto text-amber-400">${ICONS.CROWN}</div>
-            <h2 class="font-title text-3xl font-bold text-dungeon-gold tracking-wider uppercase">LEVEL UP ACHIEVED!</h2>
-            <p class="text-sm font-crimson text-slate-200">Choose a permanent boon to hone your dark powers</p>
+            <h2 class="font-title text-3xl font-bold text-dungeon-gold tracking-wider uppercase">CELESTIAL BOON UNLOCKED!</h2>
+            <p class="text-sm font-spectral text-slate-200">Choose a permanent blessing to empower your astral blade</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -554,7 +554,7 @@ export class HUDOverlay {
               <div class="bg-slate-900/90 p-5 rounded-xl border border-slate-700 hover:border-amber-400 hover:shadow-2xl transition-all flex flex-col justify-between space-y-4">
                 <div class="space-y-2 text-center">
                   <h3 class="font-title font-bold text-base text-amber-400 tracking-wider">${p.title}</h3>
-                  <p class="text-sm font-crimson text-slate-200 leading-relaxed">${p.description}</p>
+                  <p class="text-sm font-spectral text-slate-200 leading-relaxed">${p.description}</p>
                 </div>
                 <button class="btn-select-perk w-full py-2.5 gothic-button-primary rounded-lg text-xs font-title tracking-wider uppercase" data-perk-idx="${idx}">
                   Claim Boon
@@ -583,15 +583,15 @@ export class HUDOverlay {
           <div class="px-8 py-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/90">
             <div class="flex items-center space-x-3">
               <div class="w-6 h-6 text-amber-400">${ICONS.BAG}</div>
-              <h2 class="font-title text-lg font-bold text-dungeon-gold tracking-wider">HERO'S KNAPSACK & EQUIPMENT</h2>
+              <h2 class="font-title text-lg font-bold text-dungeon-gold tracking-wider">HERO'S KNAPSACK & GEAR</h2>
             </div>
-            <button id="modal-close" class="text-slate-300 hover:text-white text-xs font-title px-4 py-2 rounded bg-slate-800 border border-slate-600 font-bold">✕ CLOSE (ESC)</button>
+            <button id="modal-close" class="text-slate-200 hover:text-white text-xs font-title px-4 py-2 rounded bg-slate-800 border border-slate-600 font-bold">✕ CLOSE (ESC)</button>
           </div>
 
           <div class="p-8 overflow-y-auto flex-1 space-y-6">
             <!-- PAPERDOLL EQUIPMENT GRID -->
             <div>
-              <h3 class="font-title text-sm font-bold text-amber-400 uppercase tracking-wider mb-3">Equipped Armor & Relics</h3>
+              <h3 class="font-title text-sm font-bold text-amber-400 uppercase tracking-wider mb-3">Equipped Relics & Armor</h3>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 ${this.renderPaperdollSlot(player, EquipSlot.MAIN_HAND, 'Main Hand Weapon')}
                 ${this.renderPaperdollSlot(player, EquipSlot.OFF_HAND, 'Off Hand Shield')}
@@ -604,9 +604,9 @@ export class HUDOverlay {
 
             <!-- KNAPSACK ITEMS -->
             <div>
-              <h3 class="font-title text-sm font-bold text-amber-400 uppercase tracking-wider mb-3">Inventory Wares</h3>
+              <h3 class="font-title text-sm font-bold text-amber-400 uppercase tracking-wider mb-3">Possessions</h3>
               ${player.inventory.length === 0 ? `
-                <p class="text-center text-slate-500 py-8 italic font-crimson text-base">Your knapsack is empty.</p>
+                <p class="text-center text-slate-400 py-8 italic font-spectral text-base">Your knapsack is empty.</p>
               ` : `
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   ${player.inventory.map((item) => `
@@ -617,7 +617,7 @@ export class HUDOverlay {
                           <span class="text-xs text-slate-400 uppercase font-data">${item.type} • ${item.rarity}</span>
                         </div>
                       </div>
-                      <p class="text-sm font-crimson text-slate-200 leading-snug">${item.description}</p>
+                      <p class="text-sm font-spectral text-slate-200 leading-snug">${item.description}</p>
                       <div class="flex items-center space-x-2 pt-2 border-t border-slate-800">
                         ${item.equipSlot ? `
                           <button class="btn-use flex-1 py-1.5 px-3 bg-indigo-900 hover:bg-indigo-800 rounded text-xs font-title text-indigo-100 border border-indigo-700 font-bold" data-item-id="${item.id}">
@@ -650,7 +650,7 @@ export class HUDOverlay {
         <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 flex items-center justify-between shadow" data-unequip-slot="${slot}">
           <div class="truncate">
             <span class="text-[10px] font-title text-slate-400 block uppercase tracking-wider">${label}</span>
-            <span class="font-bold truncate text-xs font-crimson" style="color: ${item.color}">${item.name}</span>
+            <span class="font-bold truncate text-xs font-spectral" style="color: ${item.color}">${item.name}</span>
           </div>
           <button class="btn-unequip text-slate-400 hover:text-rose-400 text-xs px-2 py-1 bg-slate-800 rounded border border-slate-700 ml-2" data-slot="${slot}">✕</button>
         </div>
@@ -659,7 +659,7 @@ export class HUDOverlay {
     return `
       <div class="bg-black/60 p-3 rounded-xl border border-slate-800 text-slate-500">
         <span class="text-[10px] font-title text-slate-500 block uppercase tracking-wider">${label}</span>
-        <span class="text-xs italic font-crimson">Empty</span>
+        <span class="text-xs italic font-spectral">Empty</span>
       </div>
     `;
   }
@@ -699,11 +699,11 @@ export class HUDOverlay {
             <div class="flex items-center space-x-3">
               <div class="w-6 h-6 text-amber-400">${ICONS.GOLD_COIN}</div>
               <div>
-                <h2 class="font-title text-lg font-bold text-dungeon-gold tracking-wider">GRIMM'S CRYPT BAZAAR</h2>
+                <h2 class="font-title text-lg font-bold text-dungeon-gold tracking-wider">GRIMM'S CELESTIAL BAZAAR</h2>
                 <span class="text-xs font-data text-slate-300">Purse: <strong class="text-amber-400">${player.stats.gold} Gold</strong></span>
               </div>
             </div>
-            <button id="modal-close" class="text-slate-300 hover:text-white text-xs font-title px-4 py-2 rounded bg-slate-800 border border-slate-600 font-bold">✕ CLOSE (ESC)</button>
+            <button id="modal-close" class="text-slate-200 hover:text-white text-xs font-title px-4 py-2 rounded bg-slate-800 border border-slate-600 font-bold">✕ CLOSE (ESC)</button>
           </div>
 
           <div class="p-8 overflow-y-auto space-y-6">
@@ -719,7 +719,7 @@ export class HUDOverlay {
                       </div>
                       <span class="text-amber-400 font-bold font-data text-sm">${entry.price} Gold</span>
                     </div>
-                    <p class="text-sm font-crimson text-slate-200 leading-snug">${entry.item.description}</p>
+                    <p class="text-sm font-spectral text-slate-200 leading-snug">${entry.item.description}</p>
                     <button class="btn-buy-shop w-full py-2 rounded-lg text-xs font-title font-bold transition-all ${
                       entry.purchased
                         ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
@@ -737,13 +737,13 @@ export class HUDOverlay {
             <div>
               <h3 class="font-title text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Sell Possessions</h3>
               ${player.inventory.length === 0 ? `
-                <p class="text-slate-500 text-sm italic font-crimson">Knapsack is empty.</p>
+                <p class="text-slate-400 text-sm italic font-spectral">Knapsack is empty.</p>
               ` : `
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   ${player.inventory.map((item) => `
                     <div class="bg-black/70 p-3 rounded-xl border border-slate-700 flex items-center justify-between">
                       <div class="truncate mr-2">
-                        <span class="text-sm font-bold truncate block font-crimson" style="color: ${item.color}">${item.name}</span>
+                        <span class="text-sm font-bold truncate block font-spectral" style="color: ${item.color}">${item.name}</span>
                         <span class="text-xs text-amber-400 font-data">+${Math.max(2, Math.floor(item.value * 0.45))} Gold</span>
                       </div>
                       <button class="btn-sell-shop px-3 py-1.5 bg-emerald-900 hover:bg-emerald-800 rounded text-xs font-title text-emerald-100 border border-emerald-700 font-bold" data-item-id="${item.id}">
@@ -786,14 +786,14 @@ export class HUDOverlay {
           <div class="space-y-2">
             <div class="w-12 h-12 mx-auto text-purple-400">${ICONS.ALTAR}</div>
             <h2 class="font-title text-2xl font-bold text-purple-400 tracking-wider">ALTAR OF SACRIFICE</h2>
-            <p class="text-sm font-crimson text-slate-200">Offer earthly riches or lifeblood in exchange for otherworldly boons.</p>
+            <p class="text-sm font-spectral text-slate-200">Offer earthly riches or lifeblood in exchange for astral boons.</p>
           </div>
 
           <div class="grid grid-cols-1 gap-4 text-left">
             <button class="btn-altar-choice bg-slate-900 hover:bg-purple-950/80 p-4 rounded-xl border border-slate-700 hover:border-purple-500 transition-all flex items-center justify-between shadow" data-altar-choice="GOLD">
               <div>
                 <h4 class="font-title font-bold text-base text-amber-400">Offer Gold (50 Gold)</h4>
-                <p class="text-sm font-crimson text-slate-300 mt-0.5">Empower spirit with +15 Max Mana and +10% Critical Strike Chance.</p>
+                <p class="text-sm font-spectral text-slate-300 mt-0.5">Empower spirit with +15 Max Prana and +10% Critical Strike Chance.</p>
               </div>
               <div class="w-7 h-7 text-amber-400 shrink-0 ml-3">${ICONS.GOLD_COIN}</div>
             </button>
@@ -801,7 +801,7 @@ export class HUDOverlay {
             <button class="btn-altar-choice bg-slate-900 hover:bg-rose-950/80 p-4 rounded-xl border border-slate-700 hover:border-rose-500 transition-all flex items-center justify-between shadow" data-altar-choice="BLOOD">
               <div>
                 <h4 class="font-title font-bold text-base text-rose-400">Blood Sacrifice (20 Health)</h4>
-                <p class="text-sm font-crimson text-slate-300 mt-0.5">Infuse soul with +4 Permanent Attack Power and +2 Armor.</p>
+                <p class="text-sm font-spectral text-slate-300 mt-0.5">Infuse soul with +4 Permanent Attack Power and +2 Armor.</p>
               </div>
               <div class="w-7 h-7 text-rose-500 shrink-0 ml-3">${ICONS.DROPLET}</div>
             </button>
@@ -832,12 +832,12 @@ export class HUDOverlay {
           <div class="space-y-2">
             <div class="w-16 h-16 mx-auto text-rose-500">${ICONS.TOMBSTONE}</div>
             <h2 class="font-title text-3xl font-extrabold text-rose-500 tracking-wider uppercase">HERE LIES THE FALLEN</h2>
-            <p class="text-sm font-crimson italic text-slate-300">"Your bones join the endless legions of the subterranean abyss..."</p>
+            <p class="text-sm font-spectral italic text-slate-300">"Your celestial spark fades into the endless abyss..."</p>
           </div>
 
           <div class="bg-black/70 p-5 rounded-2xl border border-slate-700 text-sm font-data space-y-2.5 text-left">
-            <div class="flex justify-between"><span>Deepest Floor Reached:</span> <strong class="text-slate-100 font-bold">${player.stats.dungeonDepth} / 5</strong></div>
-            <div class="flex justify-between"><span>Final Level:</span> <strong class="text-dungeon-gold font-bold">${player.stats.level}</strong></div>
+            <div class="flex justify-between"><span>Deepest Sanctum Reached:</span> <strong class="text-slate-100 font-bold">${player.stats.dungeonDepth} / 5</strong></div>
+            <div class="flex justify-between"><span>Final Rank:</span> <strong class="text-dungeon-gold font-bold">${player.stats.level}</strong></div>
             <div class="flex justify-between"><span>Monsters Slain:</span> <strong class="text-rose-400 font-bold">${player.stats.monstersSlain}</strong></div>
             <div class="flex justify-between"><span>Damage Dealt:</span> <strong class="text-slate-100">${player.stats.damageDealt}</strong></div>
             <div class="flex justify-between"><span>Turns Elapsed:</span> <strong class="text-slate-100">${player.stats.turnsElapsed}</strong></div>
@@ -845,7 +845,7 @@ export class HUDOverlay {
           </div>
 
           <button id="btn-restart" class="w-full py-4 bg-gradient-to-r from-rose-800 to-rose-600 hover:from-rose-700 hover:to-rose-500 text-white font-title font-bold text-sm tracking-widest uppercase rounded-xl shadow-xl transition-all duration-200">
-            DESCEND ONCE MORE
+            BEGIN NEW JOURNEY
           </button>
         </div>
       </div>
@@ -859,11 +859,11 @@ export class HUDOverlay {
           <div class="space-y-2">
             <div class="w-16 h-16 mx-auto text-amber-400">${ICONS.CROWN}</div>
             <h2 class="font-title text-3xl font-extrabold text-dungeon-gold tracking-wider uppercase">VICTORY ACHIEVED!</h2>
-            <p class="text-sm font-crimson italic text-slate-200">"Malakor is vanquished. The Sanctum is purified in golden dawn."</p>
+            <p class="text-sm font-spectral italic text-slate-200">"Asura Malakor is vanquished. The Sanctum is purified in radiant dawn."</p>
           </div>
 
           <div class="bg-black/70 p-5 rounded-2xl border border-slate-700 text-sm font-data space-y-2.5 text-left">
-            <div class="flex justify-between"><span>Final Level:</span> <strong class="text-dungeon-gold font-bold">${player.stats.level}</strong></div>
+            <div class="flex justify-between"><span>Final Rank:</span> <strong class="text-dungeon-gold font-bold">${player.stats.level}</strong></div>
             <div class="flex justify-between"><span>Monsters Slain:</span> <strong class="text-rose-400 font-bold">${player.stats.monstersSlain}</strong></div>
             <div class="flex justify-between"><span>Total Damage:</span> <strong class="text-slate-100">${player.stats.damageDealt}</strong></div>
             <div class="flex justify-between"><span>Turns Taken:</span> <strong class="text-slate-100">${player.stats.turnsElapsed}</strong></div>
@@ -871,7 +871,7 @@ export class HUDOverlay {
           </div>
 
           <button id="btn-restart" class="w-full py-4 gothic-button-primary rounded-xl text-sm font-title font-bold tracking-widest uppercase shadow-xl transition-all duration-200">
-            BEGIN NEW JOURNEY
+            ASCEND ONCE MORE
           </button>
         </div>
       </div>
@@ -888,7 +888,7 @@ export class HUDOverlay {
     const gridW = tiles[0]?.length || 0;
     if (gridW === 0 || gridH === 0) return;
 
-    ctx.fillStyle = '#04060a';
+    ctx.fillStyle = '#03060a';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const cellW = canvas.width / gridW;

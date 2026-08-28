@@ -2,18 +2,18 @@
 <html lang="en" class="h-full w-full overflow-hidden">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='20'>💀</text></svg>" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='20'>⚡</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>CRYPT DESCENT — The Abyssal Sanctum</title>
-    <!-- Dark Fantasy Gothic Fonts: Cinzel, Crimson Pro, JetBrains Mono -->
+    <title>GANDHARV — The Celestial Crypts</title>
+    <!-- Professional Dark Fantasy Typefaces: Cinzel, Marcellus, Spectral, JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Marcellus&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-dungeon-darkest text-slate-100 antialiased h-screen w-screen overflow-hidden flex flex-col select-none font-crimson">
+  <body class="bg-dungeon-darkest text-slate-100 antialiased h-screen w-screen min-w-[1024px] min-h-[640px] overflow-hidden flex flex-col select-none font-spectral">
     <div id="app" class="relative w-full h-full flex flex-col overflow-hidden">
       <!-- TOP MINIMAL HEADER BAR -->
-      <header id="hud-top-bar" class="h-12 border-b border-dungeon-border bg-dungeon-darker/95 backdrop-blur px-6 flex items-center justify-between z-20 shrink-0"></header>
+      <header id="hud-top-bar" class="h-14 border-b border-slate-800 bg-slate-950/95 backdrop-blur-md px-6 flex items-center justify-between z-20 shrink-0 shadow-lg"></header>
 
       <!-- MAIN PLAY AREA: FULL VIEWPORT CANVAS + FLOATING CHRONICLE -->
       <div class="flex-1 flex overflow-hidden relative">
@@ -21,17 +21,17 @@
           <canvas id="game-canvas" class="block w-full h-full"></canvas>
 
           <!-- TARGETING BANNER OVERLAY -->
-          <div id="targeting-overlay" class="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-none hidden animate-bounce"></div>
+          <div id="targeting-overlay" class="absolute top-5 left-1/2 -translate-x-1/2 z-30 pointer-events-none hidden animate-bounce"></div>
 
           <!-- FLOATING CHRONICLE (Dungeon Log) -->
-          <div id="floating-log-wrap" class="absolute bottom-4 left-6 w-96 max-h-48 z-20 pointer-events-none transition-opacity duration-200">
-            <div id="log-container" class="bg-black/85 backdrop-blur-md p-3.5 rounded-xl border border-dungeon-border/80 shadow-2xl overflow-y-auto max-h-44 space-y-1.5 text-sm font-crimson text-slate-200 pointer-events-auto leading-snug"></div>
+          <div id="floating-log-wrap" class="absolute bottom-5 left-6 w-[420px] max-h-52 z-20 pointer-events-none transition-opacity duration-200">
+            <div id="log-container" class="bg-black/90 backdrop-blur-md p-4 rounded-xl border border-slate-700/80 shadow-2xl overflow-y-auto max-h-48 space-y-1.5 text-[15px] font-spectral text-slate-100 pointer-events-auto leading-relaxed"></div>
           </div>
         </main>
       </div>
 
       <!-- BOTTOM ACTION BELT / HUD -->
-      <footer id="hud-bottom-bar" class="border-t-2 border-amber-600/60 bg-gradient-to-t from-black via-slate-950 to-slate-900/95 backdrop-blur-md px-6 py-3 z-30 shrink-0 flex items-center justify-between shadow-2xl"></footer>
+      <footer id="hud-bottom-bar" class="border-t-2 border-amber-600/70 bg-gradient-to-t from-black via-slate-950 to-slate-900/98 backdrop-blur-md px-6 py-3.5 z-30 shrink-0 flex items-center justify-between shadow-2xl"></footer>
 
       <!-- MODALS & SCREEN OVERLAYS -->
       <div id="hud-modals" class="relative z-50"></div>

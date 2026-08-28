@@ -8,13 +8,13 @@ import { TileTextureRenderer } from './TileTextureRenderer';
 export class CanvasRenderer {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  public tileSize: number = 48; // Scaled up for immersive, large, high-detail viewport
+  public tileSize: number = 48; // Dynamically computed on resize
 
   // Camera viewport
   public cameraX: number = 0;
   public cameraY: number = 0;
-  public viewWidth: number = 800;
-  public viewHeight: number = 600;
+  public viewWidth: number = 1280;
+  public viewHeight: number = 720;
   public playerClass: PlayerClassType = PlayerClassType.WARRIOR;
   public currentDepth: number = 1;
 
@@ -29,6 +29,10 @@ export class CanvasRenderer {
     if (width <= 0 || height <= 0) return;
     this.viewWidth = width;
     this.viewHeight = height;
+
+    // Dynamic resolution scaling: compute ideal tile size for screen width
+    const targetTilesAcross = 26;
+    this.tileSize = Math.max(36, Math.min(64, Math.floor(width / targetTilesAcross)));
 
     const dpr = window.devicePixelRatio || 1;
     this.canvas.width = Math.floor(width * dpr);
@@ -69,7 +73,7 @@ export class CanvasRenderer {
 
     // 2. Clear Screen
     this.ctx.save();
-    this.ctx.fillStyle = '#04060a';
+    this.ctx.fillStyle = '#03060a';
     this.ctx.fillRect(0, 0, viewWidth, viewHeight);
 
     // Apply Camera Transform
@@ -85,10 +89,10 @@ export class CanvasRenderer {
     const gridWidth = tiles[0]?.length || 0;
 
     // 3. Render Textured Dungeon Tiles
-    const startX = Math.max(0, Math.floor((this.cameraX - 120) / this.tileSize));
-    const endX = Math.min(gridWidth, Math.ceil((this.cameraX + viewWidth + 120) / this.tileSize));
-    const startY = Math.max(0, Math.floor((this.cameraY - 120) / this.tileSize));
-    const endY = Math.min(gridHeight, Math.ceil((this.cameraY + viewHeight + 120) / this.tileSize));
+    const startX = Math.max(0, Math.floor((this.cameraX - 140) / this.tileSize));
+    const endX = Math.min(gridWidth, Math.ceil((this.cameraX + viewWidth + 140) / this.tileSize));
+    const startY = Math.max(0, Math.floor((this.cameraY - 140) / this.tileSize));
+    const endY = Math.min(gridHeight, Math.ceil((this.cameraY + viewHeight + 140) / this.tileSize));
 
     for (let y = startY; y < endY; y++) {
       for (let x = startX; x < endX; x++) {
@@ -122,7 +126,7 @@ export class CanvasRenderer {
 
         // Render Blood Stains
         if (tile.bloodLevel && tile.bloodLevel > 0) {
-          this.ctx.fillStyle = tile.visible ? (tile.bloodColor || 'rgba(185, 28, 28, 0.6)') : 'rgba(75, 15, 15, 0.35)';
+          this.ctx.fillStyle = tile.visible ? (tile.bloodColor || 'rgba(185, 28, 28, 0.65)') : 'rgba(75, 15, 15, 0.35)';
           this.ctx.fillRect(screenX + 3, screenY + 3, this.tileSize - 6, this.tileSize - 6);
         }
 
@@ -130,12 +134,12 @@ export class CanvasRenderer {
         if (tile.visible) {
           const light = Math.max(0.15, Math.min(1.0, tile.lightLevel || 0.2));
           if (light < 0.9) {
-            this.ctx.fillStyle = `rgba(4, 6, 10, ${1.0 - light})`;
+            this.ctx.fillStyle = `rgba(3, 6, 10, ${1.0 - light})`;
             this.ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
           }
         } else {
           // Explored but out of current FOV
-          this.ctx.fillStyle = 'rgba(4, 6, 10, 0.8)';
+          this.ctx.fillStyle = 'rgba(3, 6, 10, 0.8)';
           this.ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
         }
       }
@@ -287,13 +291,13 @@ export class CanvasRenderer {
   }
 
   private renderInspectCard(monster: Entity, x: number, y: number): void {
-    const cardW = 200;
-    const cardH = 80;
+    const cardW = 220;
+    const cardH = 85;
     const cardX = x + this.tileSize + 12;
     const cardY = y - 10;
 
     this.ctx.save();
-    this.ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+    this.ctx.fillStyle = 'rgba(11, 18, 33, 0.96)';
     this.ctx.strokeStyle = monster.color;
     this.ctx.lineWidth = 2;
     this.ctx.beginPath();
@@ -302,14 +306,14 @@ export class CanvasRenderer {
     this.ctx.stroke();
 
     this.ctx.textAlign = 'left';
-    this.ctx.font = 'bold 15px Cinzel, serif';
+    this.ctx.font = 'bold 16px Cinzel, serif';
     this.ctx.fillStyle = monster.color;
-    this.ctx.fillText(monster.name, cardX + 10, cardY + 22);
+    this.ctx.fillText(monster.name, cardX + 10, cardY + 24);
 
-    this.ctx.font = 'bold 13px JetBrains Mono, monospace';
+    this.ctx.font = 'bold 14px JetBrains Mono, monospace';
     this.ctx.fillStyle = '#f8fafc';
-    this.ctx.fillText(`HP: ${monster.stats.hp} / ${monster.stats.maxHp}`, cardX + 10, cardY + 44);
-    this.ctx.fillText(`ATK: ${monster.stats.strength}   DEF: ${monster.stats.defense}`, cardX + 10, cardY + 64);
+    this.ctx.fillText(`HP: ${monster.stats.hp} / ${monster.stats.maxHp}`, cardX + 10, cardY + 48);
+    this.ctx.fillText(`ATK: ${monster.stats.strength}   DEF: ${monster.stats.defense}`, cardX + 10, cardY + 70);
 
     this.ctx.restore();
   }

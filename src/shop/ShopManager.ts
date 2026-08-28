@@ -68,7 +68,7 @@ export class ShopManager {
       description: 'A sealed ancient lockbox containing a random enchanted treasure (High chance of Epic/Legendary)!',
       type: 'RELIC' as any,
       rarity: 'EPIC' as any,
-      char: '🎁',
+      char: 'B',
       color: '#f59e0b',
       value: 65
     };
@@ -94,7 +94,7 @@ export class ShopManager {
       description: 'Permanently increases core character attributes when consumed.',
       type: 'POTION' as any,
       rarity: 'RARE' as any,
-      char: '🧪',
+      char: 'E',
       color: '#10b981',
       value: 75
     };

@@ -3,6 +3,7 @@ import { EquipSlot, LogMessage, GameState, Tile, Skill, PlayerClassType } from '
 import { sound } from '../audio/SoundSynth';
 import { CLASS_CATALOG } from '../classes/ClassCatalog';
 import { ShopItemEntry } from '../shop/ShopManager';
+import { ICONS } from './Icons';
 
 export class HUDOverlay {
   private topBarEl: HTMLElement;
@@ -28,19 +29,22 @@ export class HUDOverlay {
     // 1. Top Bar
     this.topBarEl.innerHTML = `
       <div class="flex items-center space-x-6">
-        <div class="flex items-center space-x-2">
-          <span class="text-xl">💀</span>
-          <h1 class="font-cinzel text-base font-bold tracking-wider text-dungeon-amber">CRYPT DESCENT</h1>
+        <div class="flex items-center space-x-2.5">
+          <div class="w-6 h-6 text-amber-500">${ICONS.SKULL}</div>
+          <h1 class="font-cinzel text-base font-bold tracking-widest text-dungeon-gold">CRYPT DESCENT</h1>
         </div>
         <div class="flex items-center space-x-3 text-xs font-mono text-slate-300">
-          <span class="bg-dungeon-panel px-2.5 py-1 rounded border border-dungeon-border">
-            Floor <strong id="val-floor" class="text-dungeon-gold font-bold">1 / 5</strong>
+          <span class="bg-dungeon-panel px-3 py-1 rounded border border-dungeon-border flex items-center space-x-1.5">
+            <span class="w-4 h-4 text-sky-400">${ICONS.DUNGEON_GATE}</span>
+            <span>Floor <strong id="val-floor" class="text-sky-400 font-bold">1 / 5</strong></span>
           </span>
-          <span class="bg-dungeon-panel px-2.5 py-1 rounded border border-dungeon-border">
-            Turn <strong id="val-turn" class="text-slate-200">0</strong>
+          <span class="bg-dungeon-panel px-3 py-1 rounded border border-dungeon-border flex items-center space-x-1.5">
+            <span class="w-3.5 h-3.5 text-slate-400">${ICONS.HOURGLASS}</span>
+            <span>Turn <strong id="val-turn" class="text-slate-200">0</strong></span>
           </span>
-          <span class="bg-dungeon-panel px-2.5 py-1 rounded border border-dungeon-border">
-            Gold <strong id="val-gold" class="text-yellow-400 font-bold">0 🪙</strong>
+          <span class="bg-dungeon-panel px-3 py-1 rounded border border-dungeon-border flex items-center space-x-1.5">
+            <span class="w-4 h-4 text-amber-400">${ICONS.GOLD_COIN}</span>
+            <span><strong id="val-gold" class="text-amber-400 font-bold">0</strong> Gold</span>
           </span>
         </div>
       </div>
@@ -57,35 +61,38 @@ export class HUDOverlay {
       </div>
 
       <div class="flex items-center space-x-2">
-        <button id="btn-auto-explore" class="p-2 bg-indigo-950/70 hover:bg-indigo-900 rounded text-xs border border-indigo-700 transition-colors text-indigo-200 font-bold">
-          ⚡ Auto-Explore (Tab)
+        <button id="btn-auto-explore" class="px-3 py-1.5 bg-indigo-950/80 hover:bg-indigo-900 rounded text-xs border border-indigo-700 transition-all text-indigo-200 font-bold flex items-center space-x-1.5">
+          <span class="w-3.5 h-3.5">${ICONS.COMPASS}</span>
+          <span>Auto-Explore (Tab)</span>
         </button>
-        <button id="btn-sound" class="p-2 bg-dungeon-panel hover:bg-dungeon-border rounded text-xs border border-dungeon-border transition-colors">
-          🔊 Audio ON
+        <button id="btn-sound" class="p-2 bg-dungeon-panel hover:bg-dungeon-border rounded text-xs border border-dungeon-border transition-colors flex items-center space-x-1">
+          <span class="w-4 h-4 text-slate-300" id="sound-icon">${ICONS.SPEAKER}</span>
         </button>
-        <button id="btn-help" class="p-2 bg-dungeon-panel hover:bg-dungeon-border rounded text-xs border border-dungeon-border transition-colors">
-          ❓ Controls (?)
+        <button id="btn-help" class="px-2.5 py-1.5 bg-dungeon-panel hover:bg-dungeon-border rounded text-xs border border-dungeon-border transition-colors flex items-center space-x-1">
+          <span class="w-3.5 h-3.5 text-slate-300">${ICONS.SCROLL}</span>
+          <span>Guide (?)</span>
         </button>
-        <button id="btn-inventory" class="p-2 bg-dungeon-panel hover:bg-dungeon-border rounded text-xs border border-dungeon-border transition-colors font-bold text-dungeon-amber">
-          🎒 Inventory (I)
+        <button id="btn-inventory" class="px-3 py-1.5 bg-dungeon-panel hover:bg-dungeon-border rounded text-xs border border-dungeon-border transition-colors font-bold text-dungeon-gold flex items-center space-x-1.5">
+          <span class="w-4 h-4 text-dungeon-gold">${ICONS.BAG}</span>
+          <span>Knapsack (I)</span>
         </button>
       </div>
     `;
 
-    // 2. Sidebar
+    // 2. Sidebar (Strict fixed layout with no outer page scrollbar)
     this.sidebarEl.innerHTML = `
-      <!-- PLAYER STATS -->
-      <div class="p-4 space-y-3.5 border-b border-dungeon-border bg-dungeon-panel/40">
+      <!-- HERO HEADER & ATTRIBUTES -->
+      <div class="p-3.5 space-y-3 border-b border-dungeon-border bg-dungeon-panel/40 shrink-0">
         <div>
           <div class="flex justify-between items-center mb-1">
-            <span id="player-name-display" class="font-cinzel font-bold text-sm text-slate-100">Crypt Walker</span>
-            <span id="player-level-display" class="text-xs text-dungeon-amber font-bold">Level 1</span>
+            <span id="player-name-display" class="font-cinzel font-bold text-sm text-slate-100">Hero</span>
+            <span id="player-level-display" class="text-xs text-dungeon-gold font-bold">Level 1</span>
           </div>
           <div class="w-full h-1.5 bg-dungeon-darkest rounded-full overflow-hidden">
             <div id="player-xp-bar" class="h-full bg-dungeon-gold transition-all duration-300" style="width: 0%"></div>
           </div>
           <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
-            <span>XP</span>
+            <span>Experience</span>
             <span id="player-xp-text">0 / 100</span>
           </div>
         </div>
@@ -93,10 +100,13 @@ export class HUDOverlay {
         <!-- HP GAUGE -->
         <div>
           <div class="flex justify-between text-xs mb-1">
-            <span class="text-rose-400 font-bold">❤️ Health</span>
-            <span id="player-hp-text" class="text-slate-200 font-mono">100 / 100</span>
+            <span class="text-rose-400 font-bold flex items-center space-x-1">
+              <span class="w-3.5 h-3.5">${ICONS.HEART}</span>
+              <span>Health</span>
+            </span>
+            <span id="player-hp-text" class="text-slate-200 font-mono text-xs">100 / 100</span>
           </div>
-          <div class="w-full h-3.5 bg-dungeon-darkest rounded border border-rose-950 overflow-hidden">
+          <div class="w-full h-3 bg-dungeon-darkest rounded border border-rose-950 overflow-hidden">
             <div id="player-hp-bar" class="h-full bg-gradient-to-r from-red-700 to-rose-500 transition-all duration-200" style="width: 100%"></div>
           </div>
         </div>
@@ -104,75 +114,78 @@ export class HUDOverlay {
         <!-- MANA GAUGE -->
         <div>
           <div class="flex justify-between text-xs mb-1">
-            <span class="text-blue-400 font-bold">💧 Mana</span>
-            <span id="player-mana-text" class="text-slate-200 font-mono">50 / 50</span>
+            <span class="text-blue-400 font-bold flex items-center space-x-1">
+              <span class="w-3.5 h-3.5">${ICONS.MANA}</span>
+              <span>Mana</span>
+            </span>
+            <span id="player-mana-text" class="text-slate-200 font-mono text-xs">50 / 50</span>
           </div>
-          <div class="w-full h-3 bg-dungeon-darkest rounded border border-blue-950 overflow-hidden">
+          <div class="w-full h-2.5 bg-dungeon-darkest rounded border border-blue-950 overflow-hidden">
             <div id="player-mana-bar" class="h-full bg-gradient-to-r from-blue-700 to-cyan-500 transition-all duration-200" style="width: 100%"></div>
           </div>
         </div>
 
         <!-- ATTRIBUTES GRID -->
-        <div class="grid grid-cols-2 gap-2 text-xs font-mono">
-          <div class="bg-dungeon-darkest/70 p-2 rounded border border-dungeon-border/50">
-            <span class="text-slate-400">⚔️ ATK:</span>
-            <strong id="stat-atk" class="text-slate-100 ml-1">12</strong>
+        <div class="grid grid-cols-2 gap-1.5 text-xs font-mono">
+          <div class="bg-dungeon-darkest/70 p-1.5 rounded border border-dungeon-border/50 flex items-center justify-between">
+            <span class="text-slate-400 flex items-center space-x-1"><span class="w-3.5 h-3.5 text-slate-300">${ICONS.SWORD}</span><span>ATK:</span></span>
+            <strong id="stat-atk" class="text-slate-100">12</strong>
           </div>
-          <div class="bg-dungeon-darkest/70 p-2 rounded border border-dungeon-border/50">
-            <span class="text-slate-400">🛡️ DEF:</span>
-            <strong id="stat-def" class="text-slate-100 ml-1">3</strong>
+          <div class="bg-dungeon-darkest/70 p-1.5 rounded border border-dungeon-border/50 flex items-center justify-between">
+            <span class="text-slate-400 flex items-center space-x-1"><span class="w-3.5 h-3.5 text-sky-400">${ICONS.SHIELD}</span><span>DEF:</span></span>
+            <strong id="stat-def" class="text-slate-100">3</strong>
           </div>
-          <div class="bg-dungeon-darkest/70 p-2 rounded border border-dungeon-border/50">
-            <span class="text-slate-400">⚡ AGI:</span>
-            <strong id="stat-agi" class="text-slate-100 ml-1">12</strong>
+          <div class="bg-dungeon-darkest/70 p-1.5 rounded border border-dungeon-border/50 flex items-center justify-between">
+            <span class="text-slate-400 flex items-center space-x-1"><span class="w-3.5 h-3.5 text-amber-400">${ICONS.AGILITY}</span><span>AGI:</span></span>
+            <strong id="stat-agi" class="text-slate-100">12</strong>
           </div>
-          <div class="bg-dungeon-darkest/70 p-2 rounded border border-dungeon-border/50">
-            <span class="text-slate-400">✨ ARC:</span>
-            <strong id="stat-arc" class="text-slate-100 ml-1">10</strong>
+          <div class="bg-dungeon-darkest/70 p-1.5 rounded border border-dungeon-border/50 flex items-center justify-between">
+            <span class="text-slate-400 flex items-center space-x-1"><span class="w-3.5 h-3.5 text-purple-400">${ICONS.ARCANA}</span><span>ARC:</span></span>
+            <strong id="stat-arc" class="text-slate-100">10</strong>
           </div>
         </div>
 
         <!-- ACTIVE SKILLS HOTBAR -->
-        <div class="pt-1">
-          <h3 class="font-cinzel text-[11px] font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Active Skills</h3>
+        <div>
+          <h3 class="font-cinzel text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Active Skills</h3>
           <div id="skills-hotbar" class="grid grid-cols-3 gap-1.5"></div>
         </div>
 
         <!-- STATUS EFFECTS -->
-        <div id="status-effects-wrap" class="flex flex-wrap gap-1.5 pt-0.5"></div>
+        <div id="status-effects-wrap" class="flex flex-wrap gap-1"></div>
       </div>
 
       <!-- EQUIPMENT SLOTS -->
-      <div class="p-4 border-b border-dungeon-border">
-        <h2 class="font-cinzel text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">Equipped Gear</h2>
-        <div id="equip-slots-wrap" class="grid grid-cols-2 gap-2 text-xs"></div>
+      <div class="p-3 border-b border-dungeon-border shrink-0">
+        <h2 class="font-cinzel text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Equipped Gear</h2>
+        <div id="equip-slots-wrap" class="grid grid-cols-2 gap-1.5 text-xs"></div>
       </div>
 
-      <!-- COMBAT LOG -->
-      <div class="flex-1 p-3 flex flex-col min-h-[160px] max-h-[220px]">
-        <h2 class="font-cinzel text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Dungeon Log</h2>
-        <div id="log-container" class="flex-1 overflow-y-auto space-y-1 text-xs font-mono pr-1 bg-dungeon-darkest/50 p-2 rounded border border-dungeon-border/40"></div>
+      <!-- COMBAT / DUNGEON LOG (Scrollable inner box only) -->
+      <div class="flex-1 p-3 flex flex-col min-h-0 overflow-hidden">
+        <h2 class="font-cinzel text-[11px] font-bold text-slate-400 mb-1 uppercase tracking-wider shrink-0">Dungeon Log</h2>
+        <div id="log-container" class="flex-1 overflow-y-auto space-y-1 text-[11px] font-mono pr-1 bg-dungeon-darkest/60 p-2 rounded border border-dungeon-border/40"></div>
       </div>
 
       <!-- MINIMAP -->
-      <div class="p-3 border-t border-dungeon-border bg-dungeon-panel/30 flex items-center justify-center">
-        <canvas id="minimap-canvas" width="160" height="110" class="rounded border border-dungeon-border bg-dungeon-darkest"></canvas>
+      <div class="p-2.5 border-t border-dungeon-border bg-dungeon-panel/30 flex items-center justify-center shrink-0">
+        <canvas id="minimap-canvas" width="150" height="90" class="rounded border border-dungeon-border bg-dungeon-darkest"></canvas>
       </div>
     `;
 
     // 3. Targeting Overlay
     this.targetingEl.innerHTML = `
-      <div class="bg-indigo-950/90 border border-indigo-500 px-4 py-2 rounded-lg shadow-xl text-xs text-indigo-200 flex items-center space-x-3">
-        <span class="animate-pulse">🎯</span>
-        <span>Click a target tile or press <strong>ESC</strong> to cancel</span>
+      <div class="bg-indigo-950/95 border border-indigo-400 px-4 py-2 rounded-lg shadow-2xl text-xs text-indigo-200 flex items-center space-x-2.5 font-cinzel">
+        <span class="w-4 h-4 animate-spin text-indigo-400">${ICONS.COMPASS}</span>
+        <span>Select Target Tile or Press <strong>ESC</strong> to Cancel</span>
       </div>
     `;
 
     // Static event listeners
     document.getElementById('btn-sound')?.addEventListener('click', () => {
       this.onAction('TOGGLE_SOUND');
-      const btn = document.getElementById('btn-sound');
-      if (btn) btn.textContent = sound.getIsMuted() ? '🔇 Unmute' : '🔊 Audio ON';
+      const iconEl = document.getElementById('sound-icon');
+      if (iconEl) iconEl.innerHTML = sound.getIsMuted() ? ICONS.SPEAKER_OFF : ICONS.SPEAKER;
     });
 
     document.getElementById('btn-help')?.addEventListener('click', () => this.onAction('TOGGLE_HELP'));
@@ -198,7 +211,7 @@ export class HUDOverlay {
     if (turnEl) turnEl.textContent = `${player.stats.turnsElapsed}`;
 
     const goldEl = document.getElementById('val-gold');
-    if (goldEl) goldEl.textContent = `${player.stats.gold} 🪙`;
+    if (goldEl) goldEl.textContent = `${player.stats.gold}`;
 
     // Boss Bar
     const bossWrap = document.getElementById('boss-bar-wrap');
@@ -267,16 +280,16 @@ export class HUDOverlay {
         return `
           <button class="btn-skill p-1.5 rounded border text-left flex flex-col justify-between relative transition-all ${
             onCd || noMana
-              ? 'bg-slate-900/80 border-slate-700 opacity-60'
-              : 'bg-dungeon-panel border-dungeon-border hover:border-dungeon-amber hover:shadow-lg'
+              ? 'bg-slate-900/80 border-slate-700 opacity-50 cursor-not-allowed'
+              : 'bg-dungeon-panel border-dungeon-border hover:border-amber-500 hover:shadow-lg'
           }" data-skill-idx="${idx}">
             <div class="flex justify-between items-center text-[10px]">
-              <span class="font-bold text-slate-100 truncate">${s.icon} ${s.name}</span>
-              <span class="text-dungeon-gold font-bold font-mono">[${idx + 1}]</span>
+              <span class="font-bold text-slate-100 truncate">${s.name}</span>
+              <span class="text-amber-400 font-bold font-mono">[${idx + 1}]</span>
             </div>
-            <div class="flex justify-between text-[9px] text-slate-400 mt-1">
+            <div class="flex justify-between text-[9px] text-slate-400 mt-0.5">
               <span class="text-blue-300 font-mono">${s.manaCost} MP</span>
-              ${onCd ? `<span class="text-rose-400 font-bold font-mono">${s.cooldownCurrent}t CD</span>` : '<span class="text-emerald-400 font-bold">READY</span>'}
+              ${onCd ? `<span class="text-rose-400 font-bold font-mono">${s.cooldownCurrent}t CD</span>` : '<span class="text-emerald-400 font-bold">RDY</span>'}
             </div>
           </button>
         `;
@@ -295,8 +308,7 @@ export class HUDOverlay {
     if (statusWrap) {
       if (player.statusEffects.length > 0) {
         statusWrap.innerHTML = player.statusEffects.map((e) => `
-          <span class="text-[11px] px-2 py-0.5 rounded border border-slate-700 bg-slate-900/80 flex items-center space-x-1" style="color: ${e.color}">
-            <span>${e.icon}</span>
+          <span class="text-[10px] px-2 py-0.5 rounded border border-slate-700 bg-slate-900/80 font-mono flex items-center space-x-1" style="color: ${e.color}">
             <span>${e.name} (${e.duration}t)</span>
           </span>
         `).join('');
@@ -360,19 +372,19 @@ export class HUDOverlay {
     const item = player.equipment[slot];
     if (item) {
       return `
-        <div class="bg-dungeon-panel p-2 rounded border border-dungeon-border flex items-center justify-between group relative cursor-pointer" data-unequip-slot="${slot}">
+        <div class="bg-dungeon-panel p-1.5 rounded border border-dungeon-border flex items-center justify-between group relative cursor-pointer hover:border-amber-500/50" data-unequip-slot="${slot}">
           <div class="truncate">
-            <span class="text-[10px] text-slate-400 block">${label}</span>
-            <span class="font-bold truncate text-xs" style="color: ${item.color}">${item.name}</span>
+            <span class="text-[9px] text-slate-500 block uppercase">${label}</span>
+            <span class="font-bold truncate text-[11px]" style="color: ${item.color}">${item.name}</span>
           </div>
           <button class="text-slate-500 hover:text-rose-400 text-xs px-1" title="Unequip">✕</button>
         </div>
       `;
     }
     return `
-      <div class="bg-dungeon-darkest/40 p-2 rounded border border-dungeon-border/30 text-slate-500">
-        <span class="text-[10px] text-slate-500 block">${label}</span>
-        <span class="text-xs italic">Empty</span>
+      <div class="bg-dungeon-darkest/40 p-1.5 rounded border border-dungeon-border/30 text-slate-600">
+        <span class="text-[9px] text-slate-600 block uppercase">${label}</span>
+        <span class="text-[11px] italic">Empty</span>
       </div>
     `;
   }
@@ -406,40 +418,45 @@ export class HUDOverlay {
 
   private getClassSelectModalHTML(): string {
     const classes = Object.values(CLASS_CATALOG);
+    const crests: Record<PlayerClassType, string> = {
+      [PlayerClassType.WARRIOR]: ICONS.WARRIOR_CREST,
+      [PlayerClassType.MAGE]: ICONS.MAGE_CREST,
+      [PlayerClassType.ASSASSIN]: ICONS.ASSASSIN_CREST,
+      [PlayerClassType.CLERIC]: ICONS.CLERIC_CREST
+    };
+
     return `
-      <div class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-dungeon-darker border border-dungeon-border rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl p-8 flex flex-col space-y-6">
+      <div class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-6">
+        <div class="bg-dungeon-darker border-2 border-dungeon-border rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl p-8 flex flex-col space-y-8 gothic-panel">
           <div class="text-center space-y-2">
-            <span class="text-4xl">💀</span>
-            <h2 class="font-cinzel text-3xl font-bold text-dungeon-gold tracking-widest uppercase">Choose Your Class</h2>
+            <div class="w-10 h-10 mx-auto text-amber-500 mb-1">${ICONS.SKULL}</div>
+            <h2 class="font-cinzel text-3xl font-bold text-dungeon-gold tracking-widest uppercase">CHOOSE YOUR CHAMPION</h2>
             <p class="text-xs text-slate-400 font-mono">Select your hero archetype to brave the depths of Malakor's Crypt</p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             ${classes.map((cls) => `
-              <div class="bg-dungeon-panel p-5 rounded-xl border border-dungeon-border hover:border-dungeon-gold hover:shadow-2xl transition-all duration-200 flex flex-col justify-between space-y-4 group">
-                <div class="space-y-2">
-                  <div class="flex items-center space-x-3">
-                    <span class="text-3xl">${cls.icon}</span>
-                    <div>
-                      <h3 class="font-cinzel font-bold text-sm" style="color: ${cls.color}">${cls.name}</h3>
-                      <span class="text-[10px] text-slate-400 block">${cls.tagline}</span>
-                    </div>
+              <div class="bg-dungeon-panel p-5 rounded-xl border border-dungeon-border hover:border-amber-500 hover:shadow-2xl transition-all duration-200 flex flex-col justify-between space-y-4 group relative overflow-hidden">
+                <div class="space-y-3">
+                  <div class="w-16 h-16 mx-auto">${crests[cls.type]}</div>
+                  <div class="text-center">
+                    <h3 class="font-cinzel font-bold text-sm tracking-wider" style="color: ${cls.color}">${cls.name}</h3>
+                    <span class="text-[10px] text-slate-400 block mt-0.5">${cls.tagline}</span>
                   </div>
-                  <p class="text-[11px] text-slate-300 leading-relaxed">${cls.description}</p>
+                  <p class="text-[11px] text-slate-300 leading-relaxed text-center">${cls.description}</p>
                 </div>
 
-                <div class="bg-dungeon-darkest/70 p-3 rounded border border-dungeon-border/50 text-[11px] font-mono space-y-1">
-                  <div class="flex justify-between"><span class="text-rose-400">HP:</span> <strong>${cls.baseHp}</strong></div>
+                <div class="bg-dungeon-darkest/80 p-3 rounded border border-dungeon-border/50 text-[11px] font-mono space-y-1">
+                  <div class="flex justify-between"><span class="text-rose-400">Health:</span> <strong>${cls.baseHp}</strong></div>
                   <div class="flex justify-between"><span class="text-blue-400">Mana:</span> <strong>${cls.baseMana}</strong></div>
-                  <div class="flex justify-between"><span class="text-slate-400">STR:</span> <strong>${cls.strength}</strong></div>
-                  <div class="flex justify-between"><span class="text-slate-400">AGI:</span> <strong>${cls.agility}</strong></div>
-                  <div class="flex justify-between"><span class="text-slate-400">ARC:</span> <strong>${cls.arcana}</strong></div>
-                  <div class="flex justify-between"><span class="text-slate-400">DEF:</span> <strong>${cls.defense}</strong></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Strength:</span> <strong>${cls.strength}</strong></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Agility:</span> <strong>${cls.agility}</strong></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Arcana:</span> <strong>${cls.arcana}</strong></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Defense:</span> <strong>${cls.defense}</strong></div>
                 </div>
 
-                <button class="btn-select-class w-full py-2.5 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-dungeon-darkest font-cinzel font-bold text-xs rounded-lg shadow-lg transition-all" data-class-type="${cls.type}">
-                  Select ${cls.name}
+                <button class="btn-select-class w-full py-2.5 gothic-button-primary rounded-lg text-xs tracking-wider uppercase" data-class-type="${cls.type}">
+                  Choose ${cls.name}
                 </button>
               </div>
             `).join('')}
@@ -460,44 +477,41 @@ export class HUDOverlay {
 
   private getShopModalHTML(player: Entity, shopItems: ShopItemEntry[]): string {
     return `
-      <div class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-dungeon-darker border border-amber-600/70 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+      <div class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-dungeon-darker border border-amber-600/70 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] gothic-panel">
           <div class="px-6 py-4 border-b border-dungeon-border flex justify-between items-center bg-dungeon-panel">
             <div class="flex items-center space-x-3">
-              <span class="text-2xl">🪙</span>
+              <div class="w-6 h-6 text-amber-400">${ICONS.GOLD_COIN}</div>
               <div>
-                <h2 class="font-cinzel text-lg font-bold text-dungeon-gold">Grimm's Crypt Bazaar</h2>
-                <span class="text-[10px] text-slate-400">Your Purse: <strong class="text-yellow-400">${player.stats.gold} Gold</strong></span>
+                <h2 class="font-cinzel text-base font-bold text-dungeon-gold tracking-wider">GRIMM'S CRYPT BAZAAR</h2>
+                <span class="text-[10px] text-slate-400 font-mono">Your Purse: <strong class="text-amber-400">${player.stats.gold} Gold</strong></span>
               </div>
             </div>
-            <button id="modal-close" class="text-slate-400 hover:text-slate-100 text-sm font-mono px-2 py-1 rounded bg-dungeon-darkest border border-dungeon-border">✕ Leave Shop (ESC)</button>
+            <button id="modal-close" class="text-slate-400 hover:text-slate-100 text-xs font-mono px-3 py-1 rounded bg-dungeon-darkest border border-dungeon-border">✕ Close (ESC)</button>
           </div>
 
           <div class="p-6 overflow-y-auto space-y-6">
             <div>
-              <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider mb-3">Grimm's Wares for Sale</h3>
+              <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider mb-3">Wares for Sale</h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 ${shopItems.map((entry) => `
-                  <div class="bg-dungeon-panel p-3 rounded-lg border border-dungeon-border flex flex-col justify-between space-y-2">
+                  <div class="bg-dungeon-panel p-3.5 rounded-lg border border-dungeon-border flex flex-col justify-between space-y-2">
                     <div class="flex items-start justify-between">
-                      <div class="flex items-center space-x-2">
-                        <span class="text-base font-bold font-mono px-2 py-0.5 rounded bg-dungeon-darkest" style="color: ${entry.item.color}">${entry.item.char}</span>
-                        <div>
-                          <h4 class="font-bold text-xs" style="color: ${entry.item.color}">${entry.item.name}</h4>
-                          <span class="text-[10px] text-slate-400 uppercase">${entry.item.rarity}</span>
-                        </div>
+                      <div>
+                        <h4 class="font-bold text-xs" style="color: ${entry.item.color}">${entry.item.name}</h4>
+                        <span class="text-[10px] text-slate-400 uppercase font-mono">${entry.item.rarity}</span>
                       </div>
-                      <span class="text-yellow-400 font-bold font-mono text-xs">${entry.price} 🪙</span>
+                      <span class="text-amber-400 font-bold font-mono text-xs">${entry.price} Gold</span>
                     </div>
                     <p class="text-[11px] text-slate-300 leading-snug">${entry.item.description}</p>
-                    <button class="btn-buy-shop w-full py-1.5 rounded text-xs font-bold transition-colors ${
+                    <button class="btn-buy-shop w-full py-1.5 rounded text-xs font-bold transition-all ${
                       entry.purchased
                         ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
                         : player.stats.gold >= entry.price
-                        ? 'bg-amber-600 hover:bg-amber-500 text-dungeon-darkest'
+                        ? 'gothic-button-primary'
                         : 'bg-slate-800 text-slate-500 cursor-not-allowed'
                     }" data-shop-id="${entry.id}" ${entry.purchased || player.stats.gold < entry.price ? 'disabled' : ''}>
-                      ${entry.purchased ? 'Sold Out' : 'Purchase'}
+                      ${entry.purchased ? 'Purchased' : 'Buy Item'}
                     </button>
                   </div>
                 `).join('')}
@@ -506,18 +520,18 @@ export class HUDOverlay {
 
             <!-- SELL INVENTORY SECTION -->
             <div>
-              <h3 class="font-cinzel text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Sell Inventory for Gold</h3>
+              <h3 class="font-cinzel text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Sell Possessions</h3>
               ${player.inventory.length === 0 ? `
-                <p class="text-slate-500 text-xs italic">Nothing in knapsack to sell.</p>
+                <p class="text-slate-500 text-xs italic">Knapsack is empty.</p>
               ` : `
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                   ${player.inventory.map((item) => `
                     <div class="bg-dungeon-darkest p-2 rounded border border-dungeon-border flex items-center justify-between">
                       <div class="truncate mr-2">
                         <span class="text-xs font-bold truncate block" style="color: ${item.color}">${item.name}</span>
-                        <span class="text-[10px] text-yellow-400">+${Math.max(2, Math.floor(item.value * 0.45))} Gold</span>
+                        <span class="text-[10px] text-amber-400 font-mono">+${Math.max(2, Math.floor(item.value * 0.45))} Gold</span>
                       </div>
-                      <button class="btn-sell-shop px-2 py-1 bg-emerald-900/60 hover:bg-emerald-800 rounded text-[11px] text-emerald-200 border border-emerald-700 font-bold" data-item-id="${item.id}">
+                      <button class="btn-sell-shop px-2.5 py-1 bg-emerald-900/80 hover:bg-emerald-800 rounded text-[11px] text-emerald-200 border border-emerald-700 font-bold" data-item-id="${item.id}">
                         Sell
                       </button>
                     </div>
@@ -552,29 +566,29 @@ export class HUDOverlay {
 
   private getAltarModalHTML(): string {
     return `
-      <div class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-dungeon-darker border border-purple-600 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6 text-center space-y-6 glow-shadow">
+      <div class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-dungeon-darker border-2 border-purple-900 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-7 text-center space-y-6 gothic-panel glow-amethyst">
           <div class="space-y-2">
-            <span class="text-4xl">§</span>
-            <h2 class="font-cinzel text-xl font-bold text-purple-400 tracking-wider">Ancient Altar of Sacrifice</h2>
-            <p class="text-xs text-slate-300 font-mono">Sacrifice your earthly treasures or lifeblood for mystical blessings.</p>
+            <div class="w-10 h-10 mx-auto text-purple-400">${ICONS.ALTAR}</div>
+            <h2 class="font-cinzel text-xl font-bold text-purple-400 tracking-wider">ANCIENT ALTAR OF SACRIFICE</h2>
+            <p class="text-xs text-slate-300 font-mono">Offer earthly riches or lifeblood in exchange for otherworldly power.</p>
           </div>
 
           <div class="grid grid-cols-1 gap-3 text-left">
             <button class="btn-altar-choice bg-dungeon-panel hover:bg-purple-950/80 p-4 rounded-xl border border-dungeon-border hover:border-purple-500 transition-all flex items-center justify-between" data-altar-choice="GOLD">
               <div>
-                <h4 class="font-cinzel font-bold text-sm text-yellow-400">Offer Gold (50 🪙)</h4>
-                <p class="text-[11px] text-slate-300">Grant +15 Max Mana and +10% Critical Strike Chance.</p>
+                <h4 class="font-cinzel font-bold text-sm text-amber-400">Offer Gold (50 Gold)</h4>
+                <p class="text-[11px] text-slate-300 mt-0.5">Empower spirit with +15 Max Mana and +10% Critical Strike Chance.</p>
               </div>
-              <span class="text-xl">🪙</span>
+              <div class="w-6 h-6 text-amber-400 shrink-0 ml-3">${ICONS.GOLD_COIN}</div>
             </button>
 
             <button class="btn-altar-choice bg-dungeon-panel hover:bg-rose-950/80 p-4 rounded-xl border border-dungeon-border hover:border-rose-500 transition-all flex items-center justify-between" data-altar-choice="BLOOD">
               <div>
-                <h4 class="font-cinzel font-bold text-sm text-rose-400">Blood Sacrifice (20 HP)</h4>
-                <p class="text-[11px] text-slate-300">Infuse your soul with +4 Permanent Attack Power and +2 Armor.</p>
+                <h4 class="font-cinzel font-bold text-sm text-rose-400">Blood Sacrifice (20 Health)</h4>
+                <p class="text-[11px] text-slate-300 mt-0.5">Infuse soul with +4 Permanent Attack Power and +2 Armor.</p>
               </div>
-              <span class="text-xl">🩸</span>
+              <div class="w-6 h-6 text-rose-500 shrink-0 ml-3">${ICONS.DROPLET}</div>
             </button>
           </div>
 
@@ -598,41 +612,41 @@ export class HUDOverlay {
 
   private getInventoryModalHTML(player: Entity): string {
     return `
-      <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-dungeon-darker border border-dungeon-border rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+      <div class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-dungeon-darker border border-dungeon-border rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] gothic-panel">
           <div class="px-6 py-4 border-b border-dungeon-border flex justify-between items-center bg-dungeon-panel">
-            <h2 class="font-cinzel text-lg font-bold text-dungeon-gold">🎒 Adventurer's Knapsack</h2>
-            <button id="modal-close" class="text-slate-400 hover:text-slate-100 text-sm font-mono px-2 py-1 rounded bg-dungeon-darkest border border-dungeon-border">✕ Close (ESC)</button>
+            <div class="flex items-center space-x-2.5">
+              <div class="w-5 h-5 text-amber-400">${ICONS.BAG}</div>
+              <h2 class="font-cinzel text-base font-bold text-dungeon-gold">HERO'S KNAPSACK</h2>
+            </div>
+            <button id="modal-close" class="text-slate-400 hover:text-slate-100 text-xs font-mono px-3 py-1 rounded bg-dungeon-darkest border border-dungeon-border">✕ Close (ESC)</button>
           </div>
 
           <div class="p-6 overflow-y-auto flex-1 space-y-4">
             ${player.inventory.length === 0 ? `
-              <p class="text-center text-slate-500 py-12 italic">Your knapsack is empty. Defeat monsters and loot chests to acquire equipment and potions!</p>
+              <p class="text-center text-slate-500 py-12 italic font-mono text-xs">Your knapsack is empty. Slay monsters and unlock chests to claim equipment!</p>
             ` : `
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 ${player.inventory.map((item) => `
-                  <div class="bg-dungeon-panel p-3 rounded-lg border border-dungeon-border hover:border-dungeon-amber transition-colors flex flex-col justify-between space-y-2">
+                  <div class="bg-dungeon-panel p-3.5 rounded-lg border border-dungeon-border hover:border-amber-500/60 transition-colors flex flex-col justify-between space-y-2">
                     <div class="flex items-start justify-between">
-                      <div class="flex items-center space-x-2">
-                        <span class="text-base font-bold font-mono px-2 py-0.5 rounded bg-dungeon-darkest border border-slate-700" style="color: ${item.color}">${item.char}</span>
-                        <div>
-                          <h4 class="font-bold text-xs" style="color: ${item.color}">${item.name}</h4>
-                          <span class="text-[10px] text-slate-400 uppercase tracking-wide">${item.type} • ${item.rarity}</span>
-                        </div>
+                      <div>
+                        <h4 class="font-bold text-xs" style="color: ${item.color}">${item.name}</h4>
+                        <span class="text-[10px] text-slate-400 uppercase font-mono">${item.type} • ${item.rarity}</span>
                       </div>
                     </div>
                     <p class="text-[11px] text-slate-300 leading-snug">${item.description}</p>
                     <div class="flex items-center space-x-2 pt-1 border-t border-dungeon-border/40">
                       ${item.equipSlot ? `
-                        <button class="btn-use flex-1 py-1 px-2 bg-indigo-900/60 hover:bg-indigo-800 rounded text-xs text-indigo-200 border border-indigo-700 transition-colors font-bold" data-item-id="${item.id}">
+                        <button class="btn-use flex-1 py-1 px-2 bg-indigo-900/70 hover:bg-indigo-800 rounded text-xs text-indigo-200 border border-indigo-700 transition-colors font-bold" data-item-id="${item.id}">
                           Equip
                         </button>
                       ` : `
-                        <button class="btn-use flex-1 py-1 px-2 bg-emerald-900/60 hover:bg-emerald-800 rounded text-xs text-emerald-200 border border-emerald-700 transition-colors font-bold" data-item-id="${item.id}">
+                        <button class="btn-use flex-1 py-1 px-2 bg-emerald-900/70 hover:bg-emerald-800 rounded text-xs text-emerald-200 border border-emerald-700 transition-colors font-bold" data-item-id="${item.id}">
                           Use
                         </button>
                       `}
-                      <button class="btn-drop py-1 px-2.5 bg-rose-950/60 hover:bg-rose-900 rounded text-xs text-rose-300 border border-rose-800 transition-colors" data-item-id="${item.id}">
+                      <button class="btn-drop py-1 px-2.5 bg-rose-950/70 hover:bg-rose-900 rounded text-xs text-rose-300 border border-rose-800 transition-colors" data-item-id="${item.id}">
                         Drop
                       </button>
                     </div>
@@ -668,36 +682,36 @@ export class HUDOverlay {
 
   private getHelpModalHTML(): string {
     return `
-      <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-dungeon-darker border border-dungeon-border rounded-xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+      <div class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-dungeon-darker border border-dungeon-border rounded-xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] gothic-panel">
           <div class="px-6 py-4 border-b border-dungeon-border flex justify-between items-center bg-dungeon-panel">
-            <h2 class="font-cinzel text-lg font-bold text-dungeon-gold">📜 Dungeon Guide & Controls</h2>
-            <button id="modal-close" class="text-slate-400 hover:text-slate-100 text-sm font-mono px-2 py-1 rounded bg-dungeon-darkest border border-dungeon-border">✕ Close (ESC)</button>
+            <div class="flex items-center space-x-2">
+              <div class="w-5 h-5 text-amber-400">${ICONS.SCROLL}</div>
+              <h2 class="font-cinzel text-base font-bold text-dungeon-gold">CRYPT EXPLORATION GUIDE</h2>
+            </div>
+            <button id="modal-close" class="text-slate-400 hover:text-slate-100 text-xs font-mono px-3 py-1 rounded bg-dungeon-darkest border border-dungeon-border">✕ Close (ESC)</button>
           </div>
           <div class="p-6 overflow-y-auto space-y-4 text-xs font-mono leading-relaxed text-slate-300">
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <h3 class="font-cinzel text-dungeon-amber font-bold text-sm mb-2">Controls</h3>
+                <h3 class="font-cinzel text-dungeon-gold font-bold text-sm mb-2">Controls</h3>
                 <ul class="space-y-1.5">
                   <li><strong class="text-slate-100">WASD / Arrows</strong>: Move / Attack</li>
-                  <li><strong class="text-slate-100">Numpad (1-9)</strong>: 8-way Diagonal Move</li>
-                  <li><strong class="text-slate-100">1, 2, 3</strong>: Trigger Active Skills</li>
+                  <li><strong class="text-slate-100">1, 2, 3</strong>: Active Class Skills</li>
                   <li><strong class="text-slate-100">Q / E</strong>: Quick Health / Mana Potion</li>
                   <li><strong class="text-slate-100">Tab / O</strong>: Auto-Explore Dungeon</li>
-                  <li><strong class="text-slate-100">Left Click</strong>: A* Pathfind / Attack</li>
+                  <li><strong class="text-slate-100">Left Click</strong>: Pathfind / Attack</li>
                   <li><strong class="text-slate-100">Space / .</strong>: Wait 1 Turn</li>
-                  <li><strong class="text-slate-100">I</strong>: Inventory</li>
+                  <li><strong class="text-slate-100">I</strong>: Inventory Knapsack</li>
                 </ul>
               </div>
               <div>
-                <h3 class="font-cinzel text-dungeon-amber font-bold text-sm mb-2">Dungeon Hazards & Glyphs</h3>
+                <h3 class="font-cinzel text-dungeon-gold font-bold text-sm mb-2">Dungeon Elements</h3>
                 <ul class="space-y-1.5">
-                  <li><span class="text-red-500 font-bold">Ø</span> : Explosive Barrel (AoE blast)</li>
-                  <li><span class="text-yellow-500 font-bold">▓</span> : Cracked Wall (Secret Vault)</li>
-                  <li><span class="text-purple-500 font-bold">~</span> : Flammable Oil Puddle</li>
-                  <li><span class="text-amber-400 font-bold">@</span> : You (Player Hero)</li>
-                  <li><span class="text-sky-400 font-bold">&gt;</span> : Descend Stairs</li>
-                  <li><span class="text-purple-400 font-bold">§</span> : Sacrifice Altar</li>
+                  <li><span class="text-rose-400 font-bold">Barrels</span>: Explodes on impact</li>
+                  <li><span class="text-amber-400 font-bold">Cracked Wall</span>: Secret Vaults</li>
+                  <li><span class="text-purple-400 font-bold">Altar</span>: Stat Sacrifices</li>
+                  <li><span class="text-sky-400 font-bold">Stairs</span>: Descend Deeper</li>
                 </ul>
               </div>
             </div>
@@ -709,25 +723,25 @@ export class HUDOverlay {
 
   private getGameOverModalHTML(player: Entity): string {
     return `
-      <div class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-dungeon-darker border border-rose-900 rounded-xl w-full max-w-md overflow-hidden shadow-2xl p-6 text-center space-y-6 glow-crimson animate-fade-in">
+      <div class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-dungeon-darker border-2 border-rose-900 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-7 text-center space-y-6 glow-crimson gothic-panel">
           <div class="space-y-2">
-            <span class="text-5xl">💀</span>
+            <div class="w-12 h-12 mx-auto text-rose-500">${ICONS.SKULL}</div>
             <h2 class="font-cinzel text-2xl font-bold text-rose-500 tracking-wider">YOU HAVE PERISHED</h2>
-            <p class="text-xs text-slate-400 font-mono">Your bones join the nameless legions of the crypt...</p>
+            <p class="text-xs text-slate-400 font-mono">Your bones join the endless legions of the crypt...</p>
           </div>
 
-          <div class="bg-dungeon-panel/80 p-4 rounded-lg border border-dungeon-border text-xs font-mono space-y-2 text-left">
-            <div class="flex justify-between"><span>Dungeon Depth:</span> <strong class="text-slate-100">${player.stats.dungeonDepth} / 5</strong></div>
-            <div class="flex justify-between"><span>Level Reached:</span> <strong class="text-dungeon-gold">${player.stats.level}</strong></div>
-            <div class="flex justify-between"><span>Monsters Slain:</span> <strong class="text-rose-400">${player.stats.monstersSlain}</strong></div>
+          <div class="bg-dungeon-panel/90 p-4 rounded-xl border border-dungeon-border text-xs font-mono space-y-2 text-left">
+            <div class="flex justify-between"><span>Dungeon Depth:</span> <strong class="text-slate-100 font-bold">${player.stats.dungeonDepth} / 5</strong></div>
+            <div class="flex justify-between"><span>Level Reached:</span> <strong class="text-dungeon-gold font-bold">${player.stats.level}</strong></div>
+            <div class="flex justify-between"><span>Monsters Slain:</span> <strong class="text-rose-400 font-bold">${player.stats.monstersSlain}</strong></div>
             <div class="flex justify-between"><span>Damage Dealt:</span> <strong class="text-slate-100">${player.stats.damageDealt}</strong></div>
             <div class="flex justify-between"><span>Turns Elapsed:</span> <strong class="text-slate-100">${player.stats.turnsElapsed}</strong></div>
-            <div class="flex justify-between"><span>Gold Gathered:</span> <strong class="text-yellow-400">${player.stats.gold} 🪙</strong></div>
+            <div class="flex justify-between"><span>Gold Gathered:</span> <strong class="text-amber-400 font-bold">${player.stats.gold} Gold</strong></div>
           </div>
 
-          <button id="btn-restart" class="w-full py-3 bg-gradient-to-r from-rose-800 to-rose-600 hover:from-rose-700 hover:to-rose-500 text-white font-cinzel font-bold text-sm rounded-lg shadow-lg transition-all duration-200">
-            Descend Again
+          <button id="btn-restart" class="w-full py-3 bg-gradient-to-r from-rose-800 to-rose-600 hover:from-rose-700 hover:to-rose-500 text-white font-cinzel font-bold text-xs tracking-wider uppercase rounded-lg shadow-lg transition-all duration-200">
+            Descend Once More
           </button>
         </div>
       </div>
@@ -736,24 +750,24 @@ export class HUDOverlay {
 
   private getVictoryModalHTML(player: Entity): string {
     return `
-      <div class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-dungeon-darker border border-amber-600 rounded-xl w-full max-w-md overflow-hidden shadow-2xl p-6 text-center space-y-6 glow-gold animate-fade-in">
+      <div class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-dungeon-darker border-2 border-amber-600 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-7 text-center space-y-6 glow-gold gothic-panel">
           <div class="space-y-2">
-            <span class="text-5xl">👑</span>
+            <div class="w-12 h-12 mx-auto text-amber-400">${ICONS.WARRIOR_CREST}</div>
             <h2 class="font-cinzel text-2xl font-bold text-dungeon-gold tracking-wider">VICTORY ACHIEVED!</h2>
             <p class="text-xs text-slate-300 font-mono">Malakor the Necromancer Lord is vanquished and the Crypt is purified!</p>
           </div>
 
-          <div class="bg-dungeon-panel/80 p-4 rounded-lg border border-dungeon-border text-xs font-mono space-y-2 text-left">
-            <div class="flex justify-between"><span>Final Level:</span> <strong class="text-dungeon-gold">${player.stats.level}</strong></div>
-            <div class="flex justify-between"><span>Monsters Slain:</span> <strong class="text-rose-400">${player.stats.monstersSlain}</strong></div>
-            <div class="flex justify-between"><span>Total Damage Dealt:</span> <strong class="text-slate-100">${player.stats.damageDealt}</strong></div>
+          <div class="bg-dungeon-panel/90 p-4 rounded-xl border border-dungeon-border text-xs font-mono space-y-2 text-left">
+            <div class="flex justify-between"><span>Final Level:</span> <strong class="text-dungeon-gold font-bold">${player.stats.level}</strong></div>
+            <div class="flex justify-between"><span>Monsters Slain:</span> <strong class="text-rose-400 font-bold">${player.stats.monstersSlain}</strong></div>
+            <div class="flex justify-between"><span>Total Damage:</span> <strong class="text-slate-100">${player.stats.damageDealt}</strong></div>
             <div class="flex justify-between"><span>Turns Taken:</span> <strong class="text-slate-100">${player.stats.turnsElapsed}</strong></div>
-            <div class="flex justify-between"><span>Treasure Gold:</span> <strong class="text-yellow-400">${player.stats.gold} 🪙</strong></div>
+            <div class="flex justify-between"><span>Treasure Gold:</span> <strong class="text-amber-400 font-bold">${player.stats.gold} Gold</strong></div>
           </div>
 
-          <button id="btn-restart" class="w-full py-3 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-dungeon-darkest font-cinzel font-bold text-sm rounded-lg shadow-lg transition-all duration-200">
-            Start New Run
+          <button id="btn-restart" class="w-full py-3 gothic-button-primary rounded-lg text-xs font-bold tracking-wider uppercase shadow-lg transition-all duration-200">
+            Begin New Run
           </button>
         </div>
       </div>
@@ -770,7 +784,7 @@ export class HUDOverlay {
     const gridW = tiles[0]?.length || 0;
     if (gridW === 0 || gridH === 0) return;
 
-    ctx.fillStyle = '#090a0f';
+    ctx.fillStyle = '#06080e';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const cellW = canvas.width / gridW;

@@ -61,6 +61,10 @@ export class HUDOverlay {
       </div>
 
       <div class="flex items-center space-x-3">
+        <button id="btn-primer" class="px-3 py-1.5 bg-amber-950/80 hover:bg-amber-900 rounded-lg border border-amber-600 text-xs font-title font-bold text-amber-300 flex items-center space-x-1.5 shadow transition-all" title="Combat & How-To-Play Guide">
+          <span class="w-4 h-4">${ICONS.BOOK}</span>
+          <span>COMBAT PRIMER (?)</span>
+        </button>
         <button id="btn-sound" class="p-2 bg-slate-900 hover:bg-slate-800 rounded-lg border border-slate-700 text-slate-200 transition-colors" title="Toggle Sound">
           <span class="w-4 h-4 block" id="sound-icon">${ICONS.SPEAKER}</span>
         </button>
@@ -183,6 +187,7 @@ export class HUDOverlay {
       if (iconEl) iconEl.innerHTML = sound.getIsMuted() ? ICONS.SPEAKER_OFF : ICONS.SPEAKER;
     });
 
+    document.getElementById('btn-primer')?.addEventListener('click', () => this.onAction('TOGGLE_HELP'));
     document.getElementById('btn-codex')?.addEventListener('click', () => this.onAction('TOGGLE_CODEX'));
     document.getElementById('btn-inventory')?.addEventListener('click', () => this.onAction('TOGGLE_INVENTORY'));
     document.getElementById('btn-auto-explore')?.addEventListener('click', () => this.onAction('AUTO_EXPLORE'));
@@ -351,6 +356,9 @@ export class HUDOverlay {
     } else if (gameState === GameState.CODEX) {
       this.modalsEl.innerHTML = this.getCodexModalHTML();
       document.getElementById('modal-close')?.addEventListener('click', () => this.onAction('CLOSE_MODAL'));
+    } else if (gameState === GameState.HELP) {
+      this.modalsEl.innerHTML = this.getHelpModalHTML();
+      document.getElementById('modal-close')?.addEventListener('click', () => this.onAction('CLOSE_MODAL'));
     } else if (gameState === GameState.GAME_OVER) {
       this.modalsEl.innerHTML = this.getGameOverModalHTML(player);
       document.getElementById('btn-restart')?.addEventListener('click', () => this.onAction('RESTART_GAME'));
@@ -471,6 +479,116 @@ export class HUDOverlay {
                 <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-700">
                   <h4 class="font-title text-sm font-bold text-amber-400">Malakor, the Necromancer Lord (Depth V)</h4>
                   <p class="text-slate-300 mt-1">Master of the Sanctum. Wields dark soul orbs, bone spears, and devastating area fire novae.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private getHelpModalHTML(): string {
+    return `
+      <div class="fixed inset-0 bg-black/92 backdrop-blur-md z-50 flex items-center justify-center p-6">
+        <div class="bg-dungeon-darker border-2 border-amber-500/80 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] gothic-panel">
+          <div class="px-8 py-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/95">
+            <div class="flex items-center space-x-3">
+              <div class="w-6 h-6 text-amber-400">${ICONS.BOOK}</div>
+              <div>
+                <h2 class="font-title text-xl font-bold text-dungeon-gold tracking-wider">COMBAT PRIMER & SURVIVAL GUIDE</h2>
+                <span class="text-xs text-slate-300 font-data">Master the Turn-Based Mechanics of Gandharv</span>
+              </div>
+            </div>
+            <button id="modal-close" class="text-slate-200 hover:text-white text-xs font-title px-4 py-2 rounded bg-slate-800 border border-slate-600 font-bold">✕ CLOSE (ESC)</button>
+          </div>
+
+          <div class="p-8 overflow-y-auto space-y-7 text-slate-200">
+            <!-- 1. Turn-Based Flow -->
+            <div class="bg-slate-900/90 p-5 rounded-xl border border-slate-700 space-y-2">
+              <div class="flex items-center space-x-2.5">
+                <span class="w-5 h-5 text-amber-400">${ICONS.HOURGLASS}</span>
+                <h3 class="font-title text-base font-bold text-amber-400 uppercase tracking-wider">1. The Turn-Based Rule</h3>
+              </div>
+              <p class="font-spectral text-base text-slate-200 leading-relaxed">
+                Time only moves when <strong class="text-amber-300">YOU take an action</strong>! Monsters never attack while you are standing still. Take as long as you need to plan your route, inspect enemies, check skill cooldowns, and position yourself tactically.
+              </p>
+            </div>
+
+            <!-- 2. Combat Mechanics & Math -->
+            <div class="bg-slate-900/90 p-5 rounded-xl border border-slate-700 space-y-3">
+              <div class="flex items-center space-x-2.5">
+                <span class="w-5 h-5 text-rose-400">${ICONS.SWORD}</span>
+                <h3 class="font-title text-base font-bold text-rose-400 uppercase tracking-wider">2. How Combat Works</h3>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-spectral text-slate-200">
+                <div class="p-3 bg-black/60 rounded-lg border border-slate-800">
+                  <strong class="text-amber-300 block font-title mb-1">Striking Foes:</strong>
+                  Walk directly into an adjacent monster (using <code class="text-sky-300 font-data">WASD</code>, <code class="text-sky-300 font-data">Arrow Keys</code>, or <code class="text-sky-300 font-data">Left Click</code>) to execute an automatic weapon strike.
+                </div>
+                <div class="p-3 bg-black/60 rounded-lg border border-slate-800">
+                  <strong class="text-amber-300 block font-title mb-1">Damage & Armor Formula:</strong>
+                  Your Damage is determined by <strong class="text-slate-100">Attack Power</strong>, reduced by enemy Defense: <code class="text-sky-300 font-data">Damage = Raw × 100 / (100 + DEF)</code>.
+                </div>
+                <div class="p-3 bg-black/60 rounded-lg border border-slate-800">
+                  <strong class="text-amber-300 block font-title mb-1">Critical Strikes & Agility:</strong>
+                  High Agility grants bonus accuracy and a high chance to land <strong class="text-rose-400">Critical Strikes</strong> dealing <strong class="text-slate-100">175% bonus damage</strong>!
+                </div>
+                <div class="p-3 bg-black/60 rounded-lg border border-slate-800">
+                  <strong class="text-amber-300 block font-title mb-1">Skills & Prana:</strong>
+                  Press <code class="text-sky-300 font-data">[1]</code>, <code class="text-sky-300 font-data">[2]</code>, or <code class="text-sky-300 font-data">[3]</code> to unleash powerful ranged spells, crowd-control stuns, and teleports using your Prana (Mana).
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Visual Landmark & Item Guide -->
+            <div class="bg-slate-900/90 p-5 rounded-xl border border-slate-700 space-y-3">
+              <div class="flex items-center space-x-2.5">
+                <span class="w-5 h-5 text-sky-400">${ICONS.COMPASS}</span>
+                <h3 class="font-title text-base font-bold text-sky-400 uppercase tracking-wider">3. Landmarks & Tile Directory</h3>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs font-spectral">
+                <div class="p-3 bg-black/60 rounded-lg border border-slate-800 flex items-start space-x-2.5">
+                  <div class="w-7 h-7 text-sky-400 shrink-0">${ICONS.DUNGEON_GATE}</div>
+                  <div>
+                    <strong class="text-sky-300 font-title block">Descent Portal</strong>
+                    <span>Glowing blue stone stairs. Stand on top and press <strong class="text-white font-data">SPACE</strong> to descend deeper.</span>
+                  </div>
+                </div>
+                <div class="p-3 bg-black/60 rounded-lg border border-slate-800 flex items-start space-x-2.5">
+                  <div class="w-7 h-7 text-amber-400 shrink-0">${ICONS.GOLD_COIN}</div>
+                  <div>
+                    <strong class="text-amber-300 font-title block">Grimm's Bazaar</strong>
+                    <span>Merchant with glowing lantern. Walk next to him to purchase powerful relics and permanent stat elixirs.</span>
+                  </div>
+                </div>
+                <div class="p-3 bg-black/60 rounded-lg border border-slate-800 flex items-start space-x-2.5">
+                  <div class="w-7 h-7 text-rose-400 shrink-0">${ICONS.DROPLET}</div>
+                  <div>
+                    <strong class="text-rose-300 font-title block">Explosive TNT</strong>
+                    <span>Red barrels with TNT tags. Strike to trigger a massive 3x3 blast that obliterates surrounding foes.</span>
+                  </div>
+                </div>
+                <div class="p-3 bg-black/60 rounded-lg border border-slate-800 flex items-start space-x-2.5">
+                  <div class="w-7 h-7 text-purple-400 shrink-0">${ICONS.ALTAR}</div>
+                  <div>
+                    <strong class="text-purple-300 font-title block">Altar of Sacrifice</strong>
+                    <span>Sacrifice gold or blood in exchange for permanent celestial blessings.</span>
+                  </div>
+                </div>
+                <div class="p-3 bg-black/60 rounded-lg border border-slate-800 flex items-start space-x-2.5">
+                  <div class="w-7 h-7 text-emerald-400 shrink-0">${ICONS.BAG}</div>
+                  <div>
+                    <strong class="text-emerald-300 font-title block">Ground Loot</strong>
+                    <span>Floating glowing relics, weapons, and potions. Walk over them to pick up into your Knapsack.</span>
+                  </div>
+                </div>
+                <div class="p-3 bg-black/60 rounded-lg border border-slate-800 flex items-start space-x-2.5">
+                  <div class="w-7 h-7 text-yellow-400 shrink-0">${ICONS.CROWN}</div>
+                  <div>
+                    <strong class="text-yellow-300 font-title block">Treasure Chests</strong>
+                    <span>Ornate locked chests containing gold, rare affixes, and ancient parchment scrolls.</span>
+                  </div>
                 </div>
               </div>
             </div>

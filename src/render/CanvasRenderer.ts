@@ -8,7 +8,7 @@ import { TileTextureRenderer } from './TileTextureRenderer';
 export class CanvasRenderer {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  public tileSize: number = 48; // Dynamically computed on resize
+  public tileSize: number = 48;
 
   // Camera viewport
   public cameraX: number = 0;
@@ -30,7 +30,6 @@ export class CanvasRenderer {
     this.viewWidth = width;
     this.viewHeight = height;
 
-    // Dynamic resolution scaling: compute ideal tile size for screen width
     const targetTilesAcross = 26;
     this.tileSize = Math.max(36, Math.min(64, Math.floor(width / targetTilesAcross)));
 
@@ -68,7 +67,6 @@ export class CanvasRenderer {
     this.cameraX += (targetCamX - this.cameraX) * camLerp;
     this.cameraY += (targetCamY - this.cameraY) * camLerp;
 
-    // Apply Camera Shake
     const shake = cameraShake.update(dt);
 
     // 2. Clear Screen
@@ -76,7 +74,6 @@ export class CanvasRenderer {
     this.ctx.fillStyle = '#03060a';
     this.ctx.fillRect(0, 0, viewWidth, viewHeight);
 
-    // Apply Camera Transform
     this.ctx.translate(
       -Math.round(this.cameraX) + shake.offsetX,
       -Math.round(this.cameraY) + shake.offsetY
@@ -103,7 +100,6 @@ export class CanvasRenderer {
         const screenY = y * this.tileSize;
         const seed = (x * 73856093) ^ (y * 19349663);
 
-        // Draw Base Tile Textures
         if (tile.type === TileType.WALL) {
           TileTextureRenderer.drawWall(this.ctx, screenX, screenY, this.tileSize, this.currentDepth, tile.visible, tile.lightLevel, seed);
         } else if (tile.type === TileType.FLOOR || tile.type === TileType.CORRIDOR) {
@@ -124,13 +120,13 @@ export class CanvasRenderer {
           SpriteRenderer.drawEnvironment(this.ctx, tile.type, screenX, screenY, this.tileSize, time);
         }
 
-        // Render Blood Stains
+        // Blood Stains
         if (tile.bloodLevel && tile.bloodLevel > 0) {
           this.ctx.fillStyle = tile.visible ? (tile.bloodColor || 'rgba(185, 28, 28, 0.65)') : 'rgba(75, 15, 15, 0.35)';
           this.ctx.fillRect(screenX + 3, screenY + 3, this.tileSize - 6, this.tileSize - 6);
         }
 
-        // Apply Fog of War Shading Overlay
+        // Fog of War Overlay
         if (tile.visible) {
           const light = Math.max(0.15, Math.min(1.0, tile.lightLevel || 0.2));
           if (light < 0.9) {
@@ -138,32 +134,19 @@ export class CanvasRenderer {
             this.ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
           }
         } else {
-          // Explored but out of current FOV
           this.ctx.fillStyle = 'rgba(3, 6, 10, 0.8)';
           this.ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
         }
       }
     }
 
-    // 4. Render Items on Ground
+    // 4. Render Items on Ground with Distinct Animated Sprites
     itemsOnFloor.forEach(({ pos, item }) => {
       const tile = tiles[pos.y]?.[pos.x];
       if (tile && tile.visible) {
         const itemX = pos.x * this.tileSize;
         const itemY = pos.y * this.tileSize;
-
-        // Item Glow Halo
-        this.ctx.fillStyle = item.color + '55';
-        this.ctx.beginPath();
-        this.ctx.arc(itemX + this.tileSize / 2, itemY + this.tileSize / 2, this.tileSize * 0.45, 0, Math.PI * 2);
-        this.ctx.fill();
-
-        // Draw Stylized Item Icon
-        this.ctx.fillStyle = item.color;
-        this.ctx.font = `bold ${Math.floor(this.tileSize * 0.55)}px 'Cinzel', serif`;
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(item.char || '⚔', itemX + this.tileSize / 2, itemY + this.tileSize / 2);
+        SpriteRenderer.drawGroundItem(this.ctx, itemX, itemY, this.tileSize, item, time);
       }
     });
 
@@ -175,7 +158,7 @@ export class CanvasRenderer {
       });
     }
 
-    // 6. Render Monsters
+    // 6. Render Monsters with Threat Rims & Health
     monsters.forEach((monster) => {
       if (monster.stats.hp <= 0) return;
       const tile = tiles[monster.y]?.[monster.x];
@@ -183,6 +166,15 @@ export class CanvasRenderer {
 
       const entX = (monster.renderX + monster.bumpOffsetX) * this.tileSize;
       const entY = (monster.renderY + monster.bumpOffsetY) * this.tileSize;
+
+      // Threat ring under hostile monsters
+      if (monster.alignment === 'HOSTILE') {
+        this.ctx.strokeStyle = monster.isAlerted ? 'rgba(239, 68, 68, 0.45)' : 'rgba(245, 158, 11, 0.25)';
+        this.ctx.lineWidth = 1.5;
+        this.ctx.beginPath();
+        this.ctx.arc(entX + this.tileSize / 2, entY + this.tileSize / 2 + 4, this.tileSize * 0.38, 0, Math.PI * 2);
+        this.ctx.stroke();
+      }
 
       if (monster.hitFlashTimer > 0) {
         this.ctx.fillStyle = '#ffffff';
@@ -193,17 +185,17 @@ export class CanvasRenderer {
         }
       }
 
-      // Monster Health Bar
+      // Monster Health Bar with Numerical Counter
       if (monster.stats.hp < monster.stats.maxHp && monster.alignment !== 'NEUTRAL') {
         const barWidth = this.tileSize - 8;
-        const barHeight = 4.5;
+        const barHeight = 5;
         const hpPercent = Math.max(0, monster.stats.hp / monster.stats.maxHp);
 
         this.ctx.fillStyle = '#0f172a';
-        this.ctx.fillRect(entX + 4, entY - 7, barWidth, barHeight);
+        this.ctx.fillRect(entX + 4, entY - 8, barWidth, barHeight);
 
         this.ctx.fillStyle = hpPercent > 0.5 ? '#10b981' : hpPercent > 0.25 ? '#f59e0b' : '#ef4444';
-        this.ctx.fillRect(entX + 4, entY - 7, barWidth * hpPercent, barHeight);
+        this.ctx.fillRect(entX + 4, entY - 8, barWidth * hpPercent, barHeight);
       }
     });
 
@@ -212,7 +204,7 @@ export class CanvasRenderer {
     const playerY = (player.renderY + player.bumpOffsetY) * this.tileSize;
 
     // Lantern Glow
-    const auraRadius = this.tileSize * 1.3;
+    const auraRadius = this.tileSize * 1.35;
     const gradient = this.ctx.createRadialGradient(
       playerX + this.tileSize / 2,
       playerY + this.tileSize / 2,
@@ -273,7 +265,7 @@ export class CanvasRenderer {
       this.ctx.restore();
     });
 
-    // 11. Hover Reticle & Inspect Card
+    // 11. Hover Reticle & Comprehensive Tile/Combat Inspector
     if (hoverTile && hoverTile.x >= 0 && hoverTile.x < gridWidth && hoverTile.y >= 0 && hoverTile.y < gridHeight) {
       const hX = hoverTile.x * this.tileSize;
       const hY = hoverTile.y * this.tileSize;
@@ -281,39 +273,148 @@ export class CanvasRenderer {
       this.ctx.lineWidth = 2;
       this.ctx.strokeRect(hX + 1, hY + 1, this.tileSize - 2, this.tileSize - 2);
 
-      const hoveredMonster = monsters.find((m) => m.stats.hp > 0 && m.x === hoverTile.x && m.y === hoverTile.y);
-      if (hoveredMonster && tiles[hoverTile.y][hoverTile.x].visible) {
-        this.renderInspectCard(hoveredMonster, hX, hY);
+      const targetTile = tiles[hoverTile.y][hoverTile.x];
+      if (targetTile.visible) {
+        this.renderRichTileInspector(targetTile, hoverTile, monsters, itemsOnFloor, player, hX, hY);
       }
     }
 
     this.ctx.restore();
   }
 
-  private renderInspectCard(monster: Entity, x: number, y: number): void {
-    const cardW = 220;
-    const cardH = 85;
-    const cardX = x + this.tileSize + 12;
-    const cardY = y - 10;
+  private renderRichTileInspector(
+    tile: Tile,
+    pos: Position,
+    monsters: Entity[],
+    itemsOnFloor: { pos: Position; item: any }[],
+    player: Entity,
+    x: number,
+    y: number
+  ): void {
+    const cardW = 280;
+    let cardH = 110;
+    const cardX = x + this.tileSize + 12 > this.viewWidth + this.cameraX - cardW - 10
+      ? x - cardW - 12
+      : x + this.tileSize + 12;
+    const cardY = Math.max(this.cameraY + 10, Math.min(this.cameraY + this.viewHeight - 160, y - 10));
+
+    const monster = monsters.find((m) => m.stats.hp > 0 && m.x === pos.x && m.y === pos.y);
+    const floorItem = itemsOnFloor.find((i) => i.pos.x === pos.x && i.pos.y === pos.y);
 
     this.ctx.save();
-    this.ctx.fillStyle = 'rgba(11, 18, 33, 0.96)';
-    this.ctx.strokeStyle = monster.color;
-    this.ctx.lineWidth = 2;
-    this.ctx.beginPath();
-    this.ctx.roundRect(cardX, cardY, cardW, cardH, 6);
-    this.ctx.fill();
-    this.ctx.stroke();
 
-    this.ctx.textAlign = 'left';
-    this.ctx.font = 'bold 16px Cinzel, serif';
-    this.ctx.fillStyle = monster.color;
-    this.ctx.fillText(monster.name, cardX + 10, cardY + 24);
+    if (monster) {
+      cardH = 125;
+      this.ctx.fillStyle = 'rgba(11, 18, 33, 0.98)';
+      this.ctx.strokeStyle = monster.alignment === 'HOSTILE' ? '#ef4444' : '#38bdf8';
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.roundRect(cardX, cardY, cardW, cardH, 8);
+      this.ctx.fill();
+      this.ctx.stroke();
 
-    this.ctx.font = 'bold 14px JetBrains Mono, monospace';
-    this.ctx.fillStyle = '#f8fafc';
-    this.ctx.fillText(`HP: ${monster.stats.hp} / ${monster.stats.maxHp}`, cardX + 10, cardY + 48);
-    this.ctx.fillText(`ATK: ${monster.stats.strength}   DEF: ${monster.stats.defense}`, cardX + 10, cardY + 70);
+      // Monster Title
+      this.ctx.textAlign = 'left';
+      this.ctx.font = 'bold 15px Cinzel, serif';
+      this.ctx.fillStyle = monster.color;
+      this.ctx.fillText(`⚔ ${monster.name}`, cardX + 12, cardY + 24);
+
+      // Monster Health
+      this.ctx.font = 'bold 13px JetBrains Mono, monospace';
+      this.ctx.fillStyle = '#f8fafc';
+      this.ctx.fillText(`HP: ${monster.stats.hp} / ${monster.stats.maxHp}   DEF: ${monster.stats.defense}`, cardX + 12, cardY + 46);
+
+      // Combat Forecast
+      const baseDmg = player.getEffectiveAttackPower();
+      const def = monster.getEffectiveDefense();
+      const estimatedDmg = Math.max(1, Math.round(baseDmg * (100 / (100 + def))));
+      const agiDiff = player.stats.agility - monster.stats.agility;
+      const hitChance = Math.min(98, Math.max(20, Math.round((0.75 + agiDiff * 0.03) * 100)));
+
+      this.ctx.fillStyle = '#fbbf24';
+      this.ctx.fillText(`Your Est. Dmg: ~${estimatedDmg} (${hitChance}% Hit)`, cardX + 12, cardY + 72);
+
+      this.ctx.font = '12px Spectral, serif';
+      this.ctx.fillStyle = '#94a3b8';
+      this.ctx.fillText('Step into enemy with WASD or Click to strike!', cardX + 12, cardY + 98);
+      this.ctx.fillText('Press [1], [2], [3] to unleash active skills.', cardX + 12, cardY + 115);
+    } else if (floorItem) {
+      cardH = 95;
+      this.ctx.fillStyle = 'rgba(11, 18, 33, 0.98)';
+      this.ctx.strokeStyle = floorItem.item.color || '#fbbf24';
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.roundRect(cardX, cardY, cardW, cardH, 8);
+      this.ctx.fill();
+      this.ctx.stroke();
+
+      this.ctx.textAlign = 'left';
+      this.ctx.font = 'bold 15px Cinzel, serif';
+      this.ctx.fillStyle = floorItem.item.color || '#fbbf24';
+      this.ctx.fillText(`✦ ${floorItem.item.name}`, cardX + 12, cardY + 24);
+
+      this.ctx.font = '13px Spectral, serif';
+      this.ctx.fillStyle = '#e2e8f0';
+      this.ctx.fillText(floorItem.item.description || 'Rare subterranean relic.', cardX + 12, cardY + 48);
+
+      this.ctx.font = 'bold 12px JetBrains Mono, monospace';
+      this.ctx.fillStyle = '#38bdf8';
+      this.ctx.fillText('Walk over tile to pick up into Knapsack (I).', cardX + 12, cardY + 76);
+    } else if (tile.type === TileType.STAIRS_DOWN) {
+      cardH = 85;
+      this.ctx.fillStyle = 'rgba(11, 18, 33, 0.98)';
+      this.ctx.strokeStyle = '#38bdf8';
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.roundRect(cardX, cardY, cardW, cardH, 8);
+      this.ctx.fill();
+      this.ctx.stroke();
+
+      this.ctx.textAlign = 'left';
+      this.ctx.font = 'bold 15px Cinzel, serif';
+      this.ctx.fillStyle = '#38bdf8';
+      this.ctx.fillText(`🌀 Descent Gateway to Sanctum ${this.currentDepth + 1}`, cardX + 12, cardY + 24);
+
+      this.ctx.font = '13px Spectral, serif';
+      this.ctx.fillStyle = '#e2e8f0';
+      this.ctx.fillText('Step onto gateway and press SPACE to descend.', cardX + 12, cardY + 54);
+    } else if (tile.type === TileType.EXPLOSIVE_BARREL) {
+      cardH = 85;
+      this.ctx.fillStyle = 'rgba(11, 18, 33, 0.98)';
+      this.ctx.strokeStyle = '#dc2626';
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.roundRect(cardX, cardY, cardW, cardH, 8);
+      this.ctx.fill();
+      this.ctx.stroke();
+
+      this.ctx.textAlign = 'left';
+      this.ctx.font = 'bold 15px Cinzel, serif';
+      this.ctx.fillStyle = '#f87171';
+      this.ctx.fillText('💥 Explosive TNT Barrel', cardX + 12, cardY + 24);
+
+      this.ctx.font = '13px Spectral, serif';
+      this.ctx.fillStyle = '#e2e8f0';
+      this.ctx.fillText('Attack or cast fire to detonate 3x3 blast radius!', cardX + 12, cardY + 54);
+    } else if (tile.type === TileType.CHEST_CLOSED) {
+      cardH = 85;
+      this.ctx.fillStyle = 'rgba(11, 18, 33, 0.98)';
+      this.ctx.strokeStyle = '#f59e0b';
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.roundRect(cardX, cardY, cardW, cardH, 8);
+      this.ctx.fill();
+      this.ctx.stroke();
+
+      this.ctx.textAlign = 'left';
+      this.ctx.font = 'bold 15px Cinzel, serif';
+      this.ctx.fillStyle = '#fbbf24';
+      this.ctx.fillText('🎁 Ornate Treasure Chest', cardX + 12, cardY + 24);
+
+      this.ctx.font = '13px Spectral, serif';
+      this.ctx.fillStyle = '#e2e8f0';
+      this.ctx.fillText('Step into chest to crack lock and claim treasure.', cardX + 12, cardY + 54);
+    }
 
     this.ctx.restore();
   }

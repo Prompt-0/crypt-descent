@@ -1149,6 +1149,14 @@ export class Engine {
       case 'TOGGLE_SOUND':
         sound.toggleMute();
         break;
+      case 'TOGGLE_HELP':
+        if (this.gameState === GameState.HELP) {
+          this.gameState = this.previousGameState;
+        } else {
+          this.previousGameState = this.gameState;
+          this.gameState = GameState.HELP;
+        }
+        break;
       case 'TOGGLE_INVENTORY':
         if (this.gameState === GameState.INVENTORY) {
           this.gameState = this.previousGameState;

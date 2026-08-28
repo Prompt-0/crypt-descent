@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  body {
+    background-color: #090a0f;
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #11131a;
+}
+::-webkit-scrollbar-thumb {
+  background: #363d52;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4f5875;
+}
+
+/* Atmospheric Glows */
+.glow-gold {
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+}
+.glow-crimson {
+  box-shadow: 0 0 15px rgba(220, 38, 38, 0.35);
+}
+.glow-mana {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.35);
+}
+.glow-shadow {
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.35);
+}
+
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Tooltip animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

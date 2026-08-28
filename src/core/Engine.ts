@@ -14,7 +14,8 @@ import {
   SkillType,
   RelicProcType,
   EntityAlignment,
-  LevelUpPerk
+  LevelUpPerk,
+  StatusEffectType
 } from '../types';
 import { Entity } from '../entities/Entity';
 import { DungeonGenerator, GeneratedLevel } from '../procgen/DungeonGenerator';
@@ -552,6 +553,58 @@ export class Engine {
       });
       this.particleEngine.spawnBurst(this.player.x, this.player.y, '#94a3b8', 20, 2.5);
       this.log('You drop a smoke bomb and vanish into thin air!', '#94a3b8', 'skill');
+    } else if (skill.id === SkillType.BERSERK_RAGE) {
+      sound.playSpellCast('dark');
+      this.cameraShake.addTrauma(0.4);
+      this.player.applyStatusEffect({
+        type: StatusEffectType.MIGHT,
+        name: 'Berserker Fury',
+        duration: 6,
+        power: 8,
+        color: '#ef4444',
+        icon: '⚔'
+      });
+      this.particleEngine.spawnBurst(this.player.x, this.player.y, '#ef4444', 24, 3.0);
+      this.particleEngine.spawnFloatingText(this.player.x, this.player.y, 'BERSERK RAGE!', '#ef4444', 18, true);
+      this.log('You enter a Berserker Rage! +8 Attack Power & +50% Crit Chance for 6 turns!', '#ef4444', 'skill');
+    } else if (skill.id === SkillType.FAN_OF_KNIVES) {
+      sound.playMeleeHit(true);
+      this.cameraShake.addTrauma(0.4);
+      this.particleEngine.spawnBurst(this.player.x, this.player.y, '#10b981', 22, 3.5);
+      this.monsters.forEach((m) => {
+        if (m.alignment === EntityAlignment.HOSTILE && Math.hypot(m.x - this.player.x, m.y - this.player.y) <= 3.5) {
+          m.takeDamage(18);
+          m.applyStatusEffect({
+            type: StatusEffectType.POISON,
+            name: 'Deadly Poison',
+            duration: 4,
+            power: 5,
+            color: '#10b981',
+            icon: '☣'
+          });
+          this.particleEngine.spawnFloatingText(m.x, m.y, '-18 POISON BLADES', '#10b981', 17);
+        }
+      });
+      this.log('You unleash Fan of Knives, hurling poison-coated daggers in all directions!', '#10b981', 'skill');
+    } else if (skill.id === SkillType.PURIFYING_AURA) {
+      sound.playShrineBlessing();
+      this.cameraShake.addTrauma(0.3);
+      this.player.applyStatusEffect({
+        type: StatusEffectType.BLESSED,
+        name: 'Sanctified Aura',
+        duration: 5,
+        power: 6,
+        color: '#fbbf24',
+        icon: '✨'
+      });
+      this.monsters.forEach((m) => {
+        if (m.alignment === EntityAlignment.HOSTILE && Math.hypot(m.x - this.player.x, m.y - this.player.y) <= 2.5) {
+          m.takeDamage(14);
+          this.particleEngine.spawnFloatingText(m.x, m.y, '-14 HOLY AURA', '#fbbf24', 16);
+        }
+      });
+      this.particleEngine.spawnBurst(this.player.x, this.player.y, '#fbbf24', 22, 3.0);
+      this.log('Sanctified Aura shields your soul (+6 Defense) and burns nearby fiends with holy radiant light!', '#fbbf24', 'skill');
     } else if (skill.id === SkillType.DIVINE_HEAL) {
       sound.playShrineBlessing();
       this.player.heal(50);
@@ -567,7 +620,27 @@ export class Engine {
     this.player.stats.mana -= skill.manaCost;
     skill.cooldownCurrent = skill.cooldownMax;
 
-    if (skill.id === SkillType.FIREBOLT) {
+    if (skill.id === SkillType.SHIELD_SLAM) {
+      sound.playMeleeHit(true);
+      this.cameraShake.addTrauma(0.5);
+      const target = this.getMonsterAt(targetX, targetY);
+      if (target) {
+        const slamDmg = Math.round(this.player.getEffectiveAttackPower() * 1.2 + this.player.getEffectiveDefense());
+        target.takeDamage(slamDmg);
+        target.applyStatusEffect({
+          type: StatusEffectType.STUNNED,
+          name: 'Shield Stunned',
+          duration: 2,
+          power: 0,
+          color: '#fbbf24',
+          icon: '⚡'
+        });
+        this.particleEngine.spawnBurst(targetX, targetY, '#fbbf24', 18);
+        this.particleEngine.spawnFloatingText(targetX, targetY, `-${slamDmg} STUNNED!`, '#fbbf24', 18, true);
+      }
+      this.log('Shield Slam bashes the foe, dealing heavy concussive damage and stunning them for 2 turns!', '#fbbf24', 'skill');
+      this.endTurn();
+    } else if (skill.id === SkillType.FIREBOLT) {
       sound.playSpellCast('fire');
       this.particleEngine.spawnProjectile(
         { x: this.player.x, y: this.player.y },
@@ -672,6 +745,18 @@ export class Engine {
         if (RelicManager.hasRelic(attacker.equipment as any, RelicProcType.MOLTEN_CORE)) {
           defender.takeDamage(6);
           this.particleEngine.spawnBurst(defender.x, defender.y, '#f97316', 6);
+        }
+      }
+
+      // Defender Relic Procs (Player Defense)
+      if (defender.isPlayer && result.mitigatedDamage > 0) {
+        // 5. Aegis Dreadstone (Thorns Reflection)
+        if (RelicManager.hasRelic(defender.equipment as any, RelicProcType.AEGIS_THORNS)) {
+          const reflectedDmg = Math.max(1, Math.round(result.mitigatedDamage * 0.35));
+          attacker.takeDamage(reflectedDmg);
+          this.particleEngine.spawnFloatingText(attacker.x, attacker.y, `-${reflectedDmg} THORNS`, '#e2e8f0', 16);
+          this.particleEngine.spawnBurst(attacker.x, attacker.y, '#e2e8f0', 8);
+          this.log(`Aegis Dreadstone reflects ${reflectedDmg} thorn damage back at ${attacker.name}!`, '#e2e8f0', 'combat');
         }
       }
 
@@ -780,8 +865,11 @@ export class Engine {
     this.player.stats.turnsElapsed++;
 
     // Check Level Up
-    if (this.player.stats.xp >= this.player.stats.xpToNextLevel) {
+    if (this.player.pendingLevelUp || this.player.stats.xp >= this.player.stats.xpToNextLevel) {
+      this.player.pendingLevelUp = false;
       this.triggerLevelUp();
+      this.isProcessingTurn = false;
+      return;
     }
 
     // 1. Tick Skill Cooldowns
@@ -845,6 +933,15 @@ export class Engine {
             this.cameraShake.addTrauma(0.25);
             this.particleEngine.spawnFloatingText(this.player.x, this.player.y, `-${res.mitigatedDamage}`, '#facc15', 16);
             this.log(res.message, '#facc15', 'combat');
+
+            // Aegis Thorns ranged reflection
+            if (res.hit && res.mitigatedDamage > 0 && RelicManager.hasRelic(this.player.equipment as any, RelicProcType.AEGIS_THORNS)) {
+              const reflectedDmg = Math.max(1, Math.round(res.mitigatedDamage * 0.35));
+              monster.takeDamage(reflectedDmg);
+              this.particleEngine.spawnFloatingText(monster.x, monster.y, `-${reflectedDmg} THORNS`, '#e2e8f0', 16);
+              this.log(`Aegis Dreadstone reflects ${reflectedDmg} thorn damage back at ${monster.name}!`, '#e2e8f0', 'combat');
+            }
+
             if (this.player.stats.hp <= 0) this.handlePlayerDeath();
           }
         );
@@ -891,9 +988,6 @@ export class Engine {
 
   private triggerLevelUp(): void {
     sound.playLevelUp();
-    this.player.stats.level++;
-    this.player.stats.xp -= this.player.stats.xpToNextLevel;
-    this.player.stats.xpToNextLevel = Math.round(this.player.stats.xpToNextLevel * 1.5);
 
     // Roll 3 perks
     this.currentLevelUpPerks = [
@@ -1099,6 +1193,26 @@ export class Engine {
       if (idx >= 0) this.player.inventory.splice(idx, 1);
       sound.playPotionDrink();
 
+      // Permanent Stat Elixirs
+      if (item.id === 'stat_elixir_STR' || item.name.includes('Colossal Strength')) {
+        this.player.stats.strength += 3;
+        this.particleEngine.spawnFloatingText(this.player.x, this.player.y, '+3 STR!', '#f59e0b', 18, true);
+        this.log(`Drank ${item.name}! Your physical strength permanently surges by +3!`, '#f59e0b', 'item');
+      } else if (item.id === 'stat_elixir_DEF' || item.name.includes('Adamantine Skin')) {
+        this.player.stats.defense += 2;
+        this.particleEngine.spawnFloatingText(this.player.x, this.player.y, '+2 DEF!', '#38bdf8', 18, true);
+        this.log(`Drank ${item.name}! Your skin hardens into adamantine (+2 Permanent Defense)!`, '#38bdf8', 'item');
+      } else if (item.id === 'stat_elixir_ARC' || item.name.includes('Astral Clarity')) {
+        this.player.stats.arcana += 3;
+        this.particleEngine.spawnFloatingText(this.player.x, this.player.y, '+3 ARC!', '#c084fc', 18, true);
+        this.log(`Drank ${item.name}! Astral clarity flows through your spirit (+3 Permanent Arcana)!`, '#c084fc', 'item');
+      } else if (item.id === 'stat_elixir_HP' || item.name.includes('Titanic Vitality')) {
+        this.player.stats.maxHp += 25;
+        this.player.stats.hp += 25;
+        this.particleEngine.spawnFloatingText(this.player.x, this.player.y, '+25 MAX HP!', '#10b981', 18, true);
+        this.log(`Drank ${item.name}! Titanic vitality infuses your blood (+25 Permanent Max HP)!`, '#10b981', 'item');
+      }
+
       if (item.healAmount) {
         const healed = this.player.heal(item.healAmount);
         this.particleEngine.spawnFloatingText(this.player.x, this.player.y, `+${healed} HP`, '#10b981', 18);
@@ -1127,6 +1241,70 @@ export class Engine {
     }
 
     if (item.type === ItemType.SCROLL) {
+      if (item.name.includes('Teleport') || item.id === 'scroll_teleport') {
+        const idx = this.player.inventory.indexOf(item);
+        if (idx >= 0) this.player.inventory.splice(idx, 1);
+        sound.playSpellCast('teleport');
+
+        const walkableTiles: Position[] = [];
+        for (let y = 0; y < this.height; y++) {
+          for (let x = 0; x < this.width; x++) {
+            if (this.tiles[y][x].walkable && !this.monsters.some((m) => m.x === x && m.y === y)) {
+              walkableTiles.push({ x, y });
+            }
+          }
+        }
+        if (walkableTiles.length > 0) {
+          const dest = walkableTiles[Math.floor(Math.random() * walkableTiles.length)];
+          this.player.x = dest.x;
+          this.player.y = dest.y;
+          this.updateFOV();
+          this.particleEngine.spawnBurst(dest.x, dest.y, '#a855f7', 20);
+          this.log('The Scroll of Teleportation shifts reality, transporting you across the sanctum!', '#a855f7', 'item');
+        }
+        this.gameState = GameState.PLAYING;
+        this.endTurn();
+        return;
+      }
+
+      if (item.name.includes('Mapping') || item.id === 'scroll_mapping') {
+        const idx = this.player.inventory.indexOf(item);
+        if (idx >= 0) this.player.inventory.splice(idx, 1);
+        sound.playShrineBlessing();
+
+        for (let y = 0; y < this.height; y++) {
+          for (let x = 0; x < this.width; x++) {
+            this.tiles[y][x].explored = true;
+          }
+        }
+        this.particleEngine.spawnBurst(this.player.x, this.player.y, '#38bdf8', 25);
+        this.log('The Scroll of Magic Mapping reveals the entire floor layout in radiant crystal clairvoyance!', '#38bdf8', 'item');
+        this.gameState = GameState.PLAYING;
+        this.endTurn();
+        return;
+      }
+
+      if (item.name.includes('Enchant') || item.id === 'scroll_enchant') {
+        const idx = this.player.inventory.indexOf(item);
+        if (idx >= 0) this.player.inventory.splice(idx, 1);
+        sound.playShrineBlessing();
+
+        const mainHand = this.player.equipment[EquipSlot.MAIN_HAND];
+        if (mainHand) {
+          mainHand.attackPower = (mainHand.attackPower || 0) + 3;
+          mainHand.name = `${mainHand.name} +1`;
+          mainHand.color = '#fbbf24';
+          this.particleEngine.spawnFloatingText(this.player.x, this.player.y, '+3 WEAPON ATK!', '#fbbf24', 18, true);
+          this.log(`Enchanted your ${mainHand.name} (+3 Attack Power)!`, '#fbbf24', 'item');
+        } else {
+          this.player.stats.strength += 2;
+          this.log('No weapon equipped; your bare fists gain +2 permanent Strength!', '#fbbf24', 'item');
+        }
+        this.gameState = GameState.PLAYING;
+        this.endTurn();
+        return;
+      }
+
       if (item.name.includes('Fireball')) {
         this.gameState = GameState.TARGETING;
         this.targetingMode = {

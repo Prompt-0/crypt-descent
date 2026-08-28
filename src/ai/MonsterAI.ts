@@ -124,6 +124,7 @@ export class MonsterAI {
     if (dist <= 1.5 && Math.random() < 0.4) {
       return {
         type: 'SPELL',
+        targetPos: { x: player.x, y: player.y },
         spellName: 'Dark Nova Blast',
         damage: 24
       };

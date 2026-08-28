@@ -151,6 +151,9 @@ export class CombatEngine {
       entity.stats.arcana += 2;
       entity.stats.defense += 1;
 
+      if (entity.isPlayer) {
+        entity.pendingLevelUp = true;
+      }
       leveledUp = true;
     }
 

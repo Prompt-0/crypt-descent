@@ -31,11 +31,14 @@ export class Entity {
   public renderY: number;
   public bumpOffsetX: number = 0;
   public bumpOffsetY: number = 0;
+  private targetBumpX: number = 0;
+  private targetBumpY: number = 0;
   public bumpDuration: number = 0;
   public bumpElapsed: number = 0;
 
   // Visual feedback
   public hitFlashTimer: number = 0; // In seconds
+  public pendingLevelUp: boolean = false; // Level up boon trigger
 
   // Stats & Health
   public stats: StatBlock;
@@ -250,8 +253,10 @@ export class Entity {
   }
 
   public startBumpAnimation(targetX: number, targetY: number, duration: number = 0.12): void {
-    this.bumpOffsetX = (targetX - this.x) * 0.45;
-    this.bumpOffsetY = (targetY - this.y) * 0.45;
+    this.targetBumpX = (targetX - this.x) * 0.45;
+    this.targetBumpY = (targetY - this.y) * 0.45;
+    this.bumpOffsetX = 0;
+    this.bumpOffsetY = 0;
     this.bumpDuration = duration;
     this.bumpElapsed = 0;
   }
@@ -262,7 +267,7 @@ export class Entity {
     this.renderX += (this.x - this.renderX) * lerpFactor;
     this.renderY += (this.y - this.renderY) * lerpFactor;
 
-    // Bump animation
+    // Smooth sinusoidal bump animation
     if (this.bumpDuration > 0) {
       this.bumpElapsed += dt;
       if (this.bumpElapsed >= this.bumpDuration) {
@@ -271,10 +276,9 @@ export class Entity {
         this.bumpDuration = 0;
       } else {
         const progress = this.bumpElapsed / this.bumpDuration;
-        // Bump forward then spring back: sin(pi * progress)
         const bounce = Math.sin(Math.PI * progress);
-        this.bumpOffsetX *= bounce;
-        this.bumpOffsetY *= bounce;
+        this.bumpOffsetX = this.targetBumpX * bounce;
+        this.bumpOffsetY = this.targetBumpY * bounce;
       }
     }
 

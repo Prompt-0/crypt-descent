@@ -35,7 +35,7 @@ export interface Tile {
   walkable: boolean;
   explored: boolean;
   visible: boolean;
-  lightLevel: number; // 0.0 to 1.0
+  lightLevel: number;
   lightColor?: [number, number, number];
   bloodLevel?: number;
   bloodColor?: string;
@@ -159,14 +159,12 @@ export interface Item {
   color: string;
   equipSlot?: EquipSlot;
   value: number;
-  // Stats
   attackPower?: number;
   defense?: number;
   magicPower?: number;
   critBonus?: number;
   range?: number;
   affix?: ItemAffix;
-  // Consumables / Relics
   healAmount?: number;
   manaAmount?: number;
   effectDuration?: number;
@@ -270,14 +268,25 @@ export interface EquipmentMap {
 export enum GameState {
   TITLE = 'TITLE',
   CLASS_SELECT = 'CLASS_SELECT',
+  TRANSITION = 'TRANSITION',
   PLAYING = 'PLAYING',
   INVENTORY = 'INVENTORY',
   SHOP = 'SHOP',
   ALTAR = 'ALTAR',
+  LEVEL_UP = 'LEVEL_UP',
+  CODEX = 'CODEX',
   HELP = 'HELP',
   GAME_OVER = 'GAME_OVER',
   VICTORY = 'VICTORY',
   TARGETING = 'TARGETING'
+}
+
+export interface LevelUpPerk {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  apply: (entity: any) => void;
 }
 
 export interface LogMessage {

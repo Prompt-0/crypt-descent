@@ -13,7 +13,8 @@ import {
   Skill,
   SkillType,
   RelicProcType,
-  EntityAlignment
+  EntityAlignment,
+  LevelUpPerk
 } from '../types';
 import { Entity } from '../entities/Entity';
 import { DungeonGenerator, GeneratedLevel } from '../procgen/DungeonGenerator';
@@ -43,7 +44,7 @@ export class Engine {
   private visibilityEngine!: VisibilityEngine;
 
   // Game World State
-  public gameState: GameState = GameState.CLASS_SELECT;
+  public gameState: GameState = GameState.TITLE;
   public currentFloor: number = 1;
   public maxFloor: number = 5;
   public tiles: Tile[][] = [];
@@ -59,6 +60,7 @@ export class Engine {
   public logs: LogMessage[] = [];
   public boss: Entity | null = null;
   public shopManager: ShopManager | null = null;
+  public currentLevelUpPerks: LevelUpPerk[] = [];
 
   // Mouse & Targeting state
   public hoverTile: Position | null = null;
@@ -77,7 +79,7 @@ export class Engine {
     this.cameraShake = new CameraShake();
     this.hud = new HUDOverlay(this.handleUIAction.bind(this));
 
-    this.initClassSelection();
+    this.initTitleScreen();
     this.initInput();
     this.startLoop();
   }
@@ -86,12 +88,12 @@ export class Engine {
     this.renderer.resize(width, height);
   }
 
-  private initClassSelection(): void {
-    this.gameState = GameState.CLASS_SELECT;
+  private initTitleScreen(): void {
+    this.gameState = GameState.TITLE;
     this.currentFloor = 1;
     this.logs = [];
 
-    // Temporary player for stats rendering
+    // Placeholder player
     this.player = new Entity('player', 'Crypt Walker', '@', '#fbbf24', 0, 0, undefined, true);
   }
 
@@ -124,14 +126,14 @@ export class Engine {
     // Populate skills
     this.playerSkills = def.skills.map((s) => SkillManager.createSkill(s));
 
-    this.loadFloor(1);
-    this.gameState = GameState.PLAYING;
-    this.log(`Delving into the crypt as ${def.name}!`, def.color, 'story');
+    this.currentFloor = 1;
+    this.gameState = GameState.TRANSITION;
     sound.startAmbientDrone();
   }
 
   private loadFloor(depth: number): void {
     this.currentFloor = depth;
+    this.renderer.currentDepth = depth;
     this.player.stats.dungeonDepth = depth;
     this.monsters = [];
     this.itemsOnFloor = [];
@@ -201,7 +203,7 @@ export class Engine {
     );
 
     this.updateFOV();
-    this.log(`Entered Dungeon Floor ${depth}.`, '#38bdf8', 'system');
+    this.log(`Entered Dungeon Depth ${depth}.`, '#38bdf8', 'system');
   }
 
   private initInput(): void {
@@ -229,7 +231,7 @@ export class Engine {
     if (npc && npc.monsterType === MonsterType.MERCHANT_GRIMM) {
       sound.playCoinClink();
       this.gameState = GameState.SHOP;
-      this.log('Merchant Grimm: "Ah, traveler! Care to browse my crypt curiosities?"', '#fbbf24', 'shop');
+      this.log('Merchant Grimm: "Greetings, traveler. Inspect my subterranean curiosities."', '#fbbf24', 'shop');
       return;
     }
 
@@ -256,9 +258,9 @@ export class Engine {
       tile.walkable = true;
       tile.transparent = true;
       sound.playMeleeHit(true);
-      this.cameraShake.addTrauma(0.3);
-      this.particleEngine.spawnBurst(targetX, targetY, '#f59e0b', 14);
-      this.log('You smash through the cracked wall, revealing a secret chamber!', '#f59e0b', 'story');
+      this.cameraShake.addTrauma(0.35);
+      this.particleEngine.spawnBurst(targetX, targetY, '#f59e0b', 16);
+      this.log('You smash through the cracked wall, revealing a hidden chamber!', '#f59e0b', 'story');
       this.updateFOV();
       this.endTurn();
       return;
@@ -271,7 +273,7 @@ export class Engine {
       tile.transparent = true;
       tile.walkable = true;
       sound.playDoorOpen();
-      this.log('You open the wooden door.', '#d97706');
+      this.log('You push open the heavy oak door.', '#d97706');
       this.updateFOV();
       this.endTurn();
       return;
@@ -285,8 +287,8 @@ export class Engine {
       const lootItems = LootManager.rollChestLoot(this.currentFloor);
       lootItems.forEach((it) => {
         this.player.inventory.push(it);
-        this.log(`Opened chest! Found: ${it.name}.`, it.color, 'item');
-        this.particleEngine.spawnBurst(targetX, targetY, it.color, 8);
+        this.log(`Opened treasure chest! Claimed: ${it.name}.`, it.color, 'item');
+        this.particleEngine.spawnBurst(targetX, targetY, it.color, 10);
       });
       this.endTurn();
       return;
@@ -300,7 +302,7 @@ export class Engine {
 
       // Check stepped on stairs
       if (tile.type === TileType.STAIRS_DOWN) {
-        this.log('You stand upon the stone stairs down (>). Press > to descend.', '#38bdf8', 'system');
+        this.log('You stand before the stone stair portal (>). Press > to descend deeper.', '#38bdf8', 'system');
       }
 
       // Check stepped on shrine/altar
@@ -318,7 +320,7 @@ export class Engine {
         this.player.heal(50);
         this.player.restoreMana(30);
         this.particleEngine.spawnFloatingText(this.player.x, this.player.y, '+50 HP +30 MP', '#60a5fa', 16);
-        this.log('You drink pure restorative spring water.', '#60a5fa');
+        this.log('You drink restorative crystalline water.', '#60a5fa');
       }
 
       // Check stepped on hidden trap
@@ -329,7 +331,7 @@ export class Engine {
         const trapDamage = 10 + this.currentFloor * 3;
         this.player.takeDamage(trapDamage);
         this.particleEngine.spawnFloatingText(this.player.x, this.player.y, `-${trapDamage}`, '#ef4444', 16);
-        this.log(`You triggered a hidden spike trap! Suffered ${trapDamage} damage.`, '#ef4444', 'warning');
+        this.log(`You triggered a concealed spike trap! Suffered ${trapDamage} damage.`, '#ef4444', 'warning');
       }
 
       // Check item pickup
@@ -338,7 +340,7 @@ export class Engine {
         if (floorItem.pos.x === targetX && floorItem.pos.y === targetY) {
           this.player.inventory.push(floorItem.item);
           sound.playItemPickup();
-          this.log(`Picked up ${floorItem.item.name}.`, floorItem.item.color, 'item');
+          this.log(`Acquired ${floorItem.item.name}.`, floorItem.item.color, 'item');
           this.itemsOnFloor.splice(i, 1);
         }
       }
@@ -363,26 +365,22 @@ export class Engine {
 
     if (isExplosive) {
       sound.playExplosion();
-      this.cameraShake.addTrauma(0.7);
-      this.particleEngine.spawnBurst(x, y, '#f97316', 24, 4.0);
+      this.cameraShake.addTrauma(0.75);
+      this.particleEngine.spawnBurst(x, y, '#f97316', 26, 4.2);
 
-      // $3 \times 3$ Explosion AoE
       for (let ey = y - 1; ey <= y + 1; ey++) {
         for (let ex = x - 1; ex <= x + 1; ex++) {
           if (this.isInBounds(ex, ey)) {
-            // Damage mobs
             const targetMob = this.getMonsterAt(ex, ey);
             if (targetMob) {
               targetMob.takeDamage(40);
               this.particleEngine.spawnFloatingText(ex, ey, '-40 BLAST', '#ef4444', 16, true);
             }
-            // Damage player if in radius
             if (this.player.x === ex && this.player.y === ey) {
               this.player.takeDamage(20);
               sound.playPlayerHurt();
               this.particleEngine.spawnFloatingText(ex, ey, '-20 BLAST', '#ef4444', 16, true);
             }
-            // Shatter cracked walls
             if (this.tiles[ey][ex].type === TileType.CRACKED_WALL) {
               this.tiles[ey][ex] = {
                 type: TileType.FLOOR,
@@ -399,13 +397,13 @@ export class Engine {
           }
         }
       }
-      this.log('The explosive barrel detonates in a roaring fireball!', '#f97316', 'combat');
+      this.log('The explosive barrel erupts in a roaring conflagration!', '#f97316', 'combat');
     } else {
       sound.playMeleeHit();
-      this.particleEngine.spawnBurst(x, y, '#78350f', 10);
-      if (Math.random() < 0.4) {
+      this.particleEngine.spawnBurst(x, y, '#78350f', 12);
+      if (Math.random() < 0.45) {
         this.itemsOnFloor.push({ pos: { x, y }, item: LootManager.rollLoot(this.currentFloor) });
-        this.log('The barrel shatters, revealing hidden supplies!', '#38bdf8');
+        this.log('The oak barrel splits open, revealing supplies!', '#38bdf8');
       }
     }
   }
@@ -413,7 +411,7 @@ export class Engine {
   public handlePlayerWait(): void {
     if (this.gameState !== GameState.PLAYING || this.isProcessingTurn) return;
     this.player.restoreMana(3);
-    this.log('You rest for a moment, gathering mana.', '#94a3b8');
+    this.log('You rest for a moment, gathering focus and mana.', '#94a3b8');
     this.endTurn();
   }
 
@@ -429,7 +427,6 @@ export class Engine {
 
     if (this.gameState !== GameState.PLAYING || this.isProcessingTurn) return;
 
-    // Check adjacent interaction
     const dist = Math.hypot(pos.x - this.player.x, pos.y - this.player.y);
     if (dist <= 1.5) {
       const dx = pos.x - this.player.x;
@@ -438,7 +435,6 @@ export class Engine {
       return;
     }
 
-    // A* Pathfinding
     const targetTile = this.tiles[pos.y]?.[pos.x];
     if (targetTile && targetTile.explored && targetTile.walkable) {
       const astar = new ROT.Path.AStar(pos.x, pos.y, (x, y) => {
@@ -482,7 +478,6 @@ export class Engine {
       return;
     }
 
-    // Execute Self/AoE or Trigger Targeting
     if (!skill.requiresTarget) {
       this.executeSkillDirect(skill);
     } else {
@@ -510,7 +505,7 @@ export class Engine {
     if (skill.id === SkillType.WHIRLWIND) {
       sound.playMeleeHit(true);
       this.cameraShake.addTrauma(0.5);
-      this.particleEngine.spawnBurst(this.player.x, this.player.y, '#f97316', 20, 3.5);
+      this.particleEngine.spawnBurst(this.player.x, this.player.y, '#f97316', 22, 3.5);
 
       const adjacentDmg = Math.round(this.player.getEffectiveAttackPower() * 1.4);
       this.monsters.forEach((m) => {
@@ -551,7 +546,7 @@ export class Engine {
         icon: '💨'
       });
       this.particleEngine.spawnBurst(this.player.x, this.player.y, '#94a3b8', 20, 2.5);
-      this.log('You throw a smoke bomb, vanishing from sight!', '#94a3b8', 'skill');
+      this.log('You throw a smoke bomb, vanishing into the shadows!', '#94a3b8', 'skill');
     } else if (skill.id === SkillType.DIVINE_HEAL) {
       sound.playShrineBlessing();
       this.player.heal(50);
@@ -573,7 +568,7 @@ export class Engine {
         { x: this.player.x, y: this.player.y },
         { x: targetX, y: targetY },
         '#f97316',
-        '🔥',
+        '•',
         '#ea580c',
         14,
         () => {
@@ -595,7 +590,7 @@ export class Engine {
 
       const target = this.getMonsterAt(targetX, targetY);
       if (target) {
-        this.executeMeleeAttack(this.player, target, true); // guaranteed crit
+        this.executeMeleeAttack(this.player, target, true);
       }
       this.log(`You step through shadows and strike from behind!`, '#c084fc', 'skill');
       this.endTurn();
@@ -636,7 +631,7 @@ export class Engine {
       if (attacker.isPlayer) {
         const attackCount = RelicManager.incrementAttackCounter();
 
-        // 1. Thunderstone Charm (Every 3rd attack arcs lightning)
+        // 1. Thunderstone Charm
         if (RelicManager.hasRelic(attacker.equipment as any, RelicProcType.THUNDER_STRIKE) && attackCount % 3 === 0) {
           sound.playLightning();
           this.cameraShake.addTrauma(0.4);
@@ -649,7 +644,7 @@ export class Engine {
           });
         }
 
-        // 2. Vampire Lord Fang (Heal on crit)
+        // 2. Vampire Lord Fang
         if (result.isCrit && RelicManager.hasRelic(attacker.equipment as any, RelicProcType.VAMPIRE_FANG)) {
           const lifesteal = Math.round(result.mitigatedDamage * 0.25);
           attacker.heal(lifesteal);
@@ -668,7 +663,7 @@ export class Engine {
           });
         }
 
-        // 4. Molten Core (+Fire ignite)
+        // 4. Molten Core
         if (RelicManager.hasRelic(attacker.equipment as any, RelicProcType.MOLTEN_CORE)) {
           defender.takeDamage(6);
           this.particleEngine.spawnBurst(defender.x, defender.y, '#f97316', 6);
@@ -689,7 +684,6 @@ export class Engine {
         sound.playMonsterDeath(defender.monsterType === MonsterType.BOSS_MALAKOR);
         this.particleEngine.spawnBurst(defender.x, defender.y, '#e2e8f0', 18, 3.5, false);
 
-        // Check Phylactery of Souls (Resurrect friendly skeleton ally)
         if (attacker.isPlayer && RelicManager.hasRelic(attacker.equipment as any, RelicProcType.NECRO_MINION) && Math.random() < 0.3) {
           const ally = Entity.createMonster(MonsterType.FRIENDLY_SKELETON, defender.x, defender.y);
           ally.alignment = EntityAlignment.ALLY;
@@ -715,14 +709,12 @@ export class Engine {
   public autoExplore(): void {
     if (this.gameState !== GameState.PLAYING || this.isProcessingTurn || this.isAutoExploring) return;
 
-    // Check if any visible hostile monster is in view
     const visibleMonster = this.monsters.some((m) => m.alignment === EntityAlignment.HOSTILE && this.tiles[m.y]?.[m.x]?.visible);
     if (visibleMonster) {
-      this.log('Cannot auto-explore while enemies are in sight!', '#f43f5e', 'warning');
+      this.log('Cannot auto-explore while hostiles are in sight!', '#f43f5e', 'warning');
       return;
     }
 
-    // Find nearest unexplored walkable tile or unlooted item
     let nearestTarget: Position | null = null;
     let shortestDist = Infinity;
 
@@ -740,7 +732,7 @@ export class Engine {
     }
 
     if (!nearestTarget) {
-      this.log('All reachable areas explored on this floor! Find the stairs (>).', '#38bdf8');
+      this.log('All reachable areas explored on this floor! Proceed to the stairs (>).', '#38bdf8');
       return;
     }
 
@@ -762,6 +754,11 @@ export class Engine {
     this.isProcessingTurn = true;
     this.player.stats.turnsElapsed++;
 
+    // Check Level Up
+    if (this.player.stats.xp >= this.player.stats.xpToNextLevel) {
+      this.triggerLevelUp();
+    }
+
     // 1. Tick Skill Cooldowns
     SkillManager.tickCooldowns(this.playerSkills);
 
@@ -781,7 +778,6 @@ export class Engine {
       if (monster.stats.hp <= 0) return;
 
       if (monster.alignment === EntityAlignment.ALLY) {
-        // Ally AI: attack nearest hostile mob
         const hostiles = this.monsters.filter((m) => m.alignment === EntityAlignment.HOSTILE && m.stats.hp > 0);
         if (hostiles.length > 0) {
           hostiles.sort((a, b) => Math.hypot(a.x - monster.x, a.y - monster.y) - Math.hypot(b.x - monster.x, b.y - monster.y));
@@ -800,7 +796,7 @@ export class Engine {
         return;
       }
 
-      if (monster.alignment === EntityAlignment.NEUTRAL) return; // Merchant does not act
+      if (monster.alignment === EntityAlignment.NEUTRAL) return;
 
       const action = MonsterAI.planTurn(monster, this.player, this.tiles, this.monsters, this.width, this.height);
 
@@ -868,18 +864,62 @@ export class Engine {
     this.isProcessingTurn = false;
   }
 
+  private triggerLevelUp(): void {
+    sound.playLevelUp();
+    this.player.stats.level++;
+    this.player.stats.xp -= this.player.stats.xpToNextLevel;
+    this.player.stats.xpToNextLevel = Math.round(this.player.stats.xpToNextLevel * 1.5);
+
+    // Roll 3 perks
+    this.currentLevelUpPerks = [
+      {
+        id: 'vigor',
+        title: "Titan's Vitality",
+        description: 'Permanently increases Max Health by +25 and instantly restores full Health.',
+        icon: 'HEART',
+        apply: (p: Entity) => {
+          p.stats.maxHp += 25;
+          p.stats.hp = p.stats.maxHp;
+        }
+      },
+      {
+        id: 'bloodthirst',
+        title: 'Bloodlust Fury',
+        description: 'Permanently grants +3 Attack Power and +5% Critical Strike multiplier.',
+        icon: 'SWORD',
+        apply: (p: Entity) => {
+          p.stats.strength += 3;
+        }
+      },
+      {
+        id: 'aegis',
+        title: 'Adamantine Ward',
+        description: 'Permanently grants +3 Defense Armor and +15 Max Mana.',
+        icon: 'SHIELD',
+        apply: (p: Entity) => {
+          p.stats.defense += 3;
+          p.stats.maxMana += 15;
+          p.stats.mana = p.stats.maxMana;
+        }
+      }
+    ];
+
+    this.gameState = GameState.LEVEL_UP;
+  }
+
   private handlePlayerDeath(): void {
     this.gameState = GameState.GAME_OVER;
     sound.playPlayerHurt();
     this.cameraShake.addTrauma(0.8);
-    this.log('You have fallen in battle. Darkness consumes you...', '#ef4444', 'story');
+    this.log('You have fallen in battle. Darkness claims your soul...', '#ef4444', 'story');
   }
 
   public descendStairs(): void {
     if (this.player.x === this.stairsDownPos.x && this.player.y === this.stairsDownPos.y) {
       if (this.currentFloor < this.maxFloor) {
         sound.playStairsDescent();
-        this.loadFloor(this.currentFloor + 1);
+        this.currentFloor++;
+        this.gameState = GameState.TRANSITION;
       } else {
         this.log("You stand at the heart of Malakor's Sanctum.", '#e11d48');
       }
@@ -902,8 +942,22 @@ export class Engine {
 
   public handleUIAction(action: string, data?: any): void {
     switch (action) {
+      case 'START_GAME':
+        this.gameState = GameState.CLASS_SELECT;
+        break;
       case 'SELECT_CLASS':
         if (data?.classType) this.selectClass(data.classType);
+        break;
+      case 'CONTINUE_DESCENT':
+        this.loadFloor(this.currentFloor);
+        this.gameState = GameState.PLAYING;
+        break;
+      case 'SELECT_LEVEL_PERK':
+        if (typeof data?.perkIndex === 'number' && this.currentLevelUpPerks[data.perkIndex]) {
+          this.currentLevelUpPerks[data.perkIndex].apply(this.player);
+          this.log(`Gained Boon: ${this.currentLevelUpPerks[data.perkIndex].title}!`, '#fbbf24', 'story');
+          this.gameState = GameState.PLAYING;
+        }
         break;
       case 'USE_SKILL':
         if (typeof data?.skillIndex === 'number') this.useSkill(data.skillIndex);
@@ -911,11 +965,8 @@ export class Engine {
       case 'AUTO_EXPLORE':
         this.autoExplore();
         break;
-      case 'QUICK_HEAL':
-        this.quickPotion('health_potion');
-        break;
-      case 'QUICK_MANA':
-        this.quickPotion('mana_potion');
+      case 'TOGGLE_CODEX':
+        this.gameState = this.gameState === GameState.CODEX ? GameState.PLAYING : GameState.CODEX;
         break;
       case 'BUY_SHOP_ITEM':
         if (this.shopManager && data?.entryId) {
@@ -948,10 +999,10 @@ export class Engine {
             this.player.stats.mana = this.player.stats.maxMana;
             sound.playShrineBlessing();
             this.particleEngine.spawnFloatingText(this.player.x, this.player.y, '+15 MAX MANA & CRIT', '#c084fc', 16);
-            this.log('Altar accepts your gold offering: Granted +15 Max Mana & +10% Crit!', '#c084fc', 'story');
+            this.log('Altar accepts gold offering: Granted +15 Max Mana & +10% Crit!', '#c084fc', 'story');
             this.gameState = GameState.PLAYING;
           } else {
-            this.log('You do not possess enough gold (50 required).', '#f43f5e', 'warning');
+            this.log('Not enough gold (50 required).', '#f43f5e', 'warning');
           }
         } else if (data?.choice === 'BLOOD') {
           if (this.player.stats.hp > 25) {
@@ -961,10 +1012,10 @@ export class Engine {
             sound.playMeleeHit(true);
             this.cameraShake.addTrauma(0.5);
             this.particleEngine.spawnFloatingText(this.player.x, this.player.y, '+4 STR +2 DEF', '#ef4444', 16);
-            this.log('Blood sacrifice made: +4 Strength and +2 Defense infused into your veins!', '#ef4444', 'story');
+            this.log('Blood sacrifice accepted: +4 Strength and +2 Defense granted!', '#ef4444', 'story');
             this.gameState = GameState.PLAYING;
           } else {
-            this.log('Your vitality is too low to survive the blood sacrifice!', '#f43f5e', 'warning');
+            this.log('Vitality too low to survive sacrifice!', '#f43f5e', 'warning');
           }
         }
         break;
@@ -974,14 +1025,11 @@ export class Engine {
       case 'TOGGLE_INVENTORY':
         this.gameState = this.gameState === GameState.INVENTORY ? GameState.PLAYING : GameState.INVENTORY;
         break;
-      case 'TOGGLE_HELP':
-        this.gameState = this.gameState === GameState.HELP ? GameState.PLAYING : GameState.HELP;
-        break;
       case 'CLOSE_MODAL':
         this.gameState = GameState.PLAYING;
         break;
       case 'RESTART_GAME':
-        this.initClassSelection();
+        this.initTitleScreen();
         break;
       case 'USE_ITEM':
         if (data?.item) this.useItem(data.item);
@@ -995,15 +1043,6 @@ export class Engine {
           sound.playItemPickup();
         }
         break;
-    }
-  }
-
-  private quickPotion(key: string): void {
-    const pot = this.player.inventory.find((i) => i.name.toLowerCase().includes(key === 'health_potion' ? 'healing' : 'mana'));
-    if (pot) {
-      this.useItem(pot);
-    } else {
-      this.log(`No ${key === 'health_potion' ? 'Healing' : 'Mana'} potion in knapsack!`, '#f43f5e', 'warning');
     }
   }
 
@@ -1070,7 +1109,7 @@ export class Engine {
               { x: this.player.x, y: this.player.y },
               { x: targetX, y: targetY },
               '#f97316',
-              '🔥',
+              '•',
               '#ea580c',
               12,
               () => {
@@ -1125,15 +1164,15 @@ export class Engine {
   }
 
   public handleKeyAction(action: string, data?: any): void {
+    if (this.gameState === GameState.TRANSITION && action === 'ESCAPE') {
+      this.loadFloor(this.currentFloor);
+      this.gameState = GameState.PLAYING;
+      return;
+    }
+
     switch (action) {
       case 'USE_SKILL':
         if (typeof data?.skillIndex === 'number') this.useSkill(data.skillIndex);
-        break;
-      case 'QUICK_HEAL':
-        this.quickPotion('health_potion');
-        break;
-      case 'QUICK_MANA':
-        this.quickPotion('mana_potion');
         break;
       case 'AUTO_EXPLORE':
         this.autoExplore();
@@ -1142,13 +1181,14 @@ export class Engine {
         this.gameState = this.gameState === GameState.INVENTORY ? GameState.PLAYING : GameState.INVENTORY;
         break;
       case 'TOGGLE_HELP':
-        this.gameState = this.gameState === GameState.HELP ? GameState.PLAYING : GameState.HELP;
+      case 'TOGGLE_CODEX':
+        this.gameState = this.gameState === GameState.CODEX ? GameState.PLAYING : GameState.CODEX;
         break;
       case 'ESCAPE':
         if (this.gameState === GameState.TARGETING) {
           this.targetingMode = null;
           this.gameState = GameState.PLAYING;
-        } else if (this.gameState === GameState.SHOP || this.gameState === GameState.ALTAR || this.gameState === GameState.INVENTORY || this.gameState === GameState.HELP) {
+        } else if (this.gameState === GameState.SHOP || this.gameState === GameState.ALTAR || this.gameState === GameState.INVENTORY || this.gameState === GameState.CODEX || this.gameState === GameState.HELP) {
           this.gameState = GameState.PLAYING;
         }
         break;
@@ -1211,7 +1251,8 @@ export class Engine {
         this.tiles,
         this.boss,
         this.playerSkills,
-        this.shopManager?.getStock() || []
+        this.shopManager?.getStock() || [],
+        this.currentLevelUpPerks
       );
 
       requestAnimationFrame(loop);

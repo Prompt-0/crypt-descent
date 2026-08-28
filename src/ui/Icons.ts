@@ -162,6 +162,26 @@ export const ICONS = {
     </svg>
   `,
 
+  TOMBSTONE: `
+    <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full">
+      <path d="M12 2C7.58 2 4 5.58 4 10V20H20V10C20 5.58 16.42 2 12 2ZM11 7H13V10H16V12H13V17H11V12H8V10H11V7Z"/>
+      <rect x="2" y="20" width="20" height="2" rx="1"/>
+    </svg>
+  `,
+
+  CROWN: `
+    <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full">
+      <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19V18H19V19Z"/>
+    </svg>
+  `,
+
+  BOOK: `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </svg>
+  `,
+
   DROPLET: `
     <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full">
       <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
